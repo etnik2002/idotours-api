@@ -1312,5 +1312,41 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
+  },
+
+  getByRouteAndDate: async (req, res) => {
+    try {
+      const { route_number } = req.params;
+      const { date } = req.query;
+
+      if (!route_number || !date) {
+        return bad_request(res, "Route number and date are required", null);
+      }
+
+      const departureDate = moment(date, "DD-MM-YYYY");
+      if (!departureDate.isValid()) {
+        return bad_request(res, "Invalid date format. Use DD-MM-YYYY", null);
+      }
+
+      const startOfDay = moment(departureDate).startOf("day").toDate();
+      const endOfDay = moment(departureDate).endOf("day").toDate();
+
+      const ticket = await Ticket.findOne({
+        route_number: route_number,
+        departure_date: { $gte: startOfDay, $lte: endOfDay },
+      })
+        .populate("route_number")
+        .populate("stops.from")
+        .populate("stops.to")
+        .populate("operator");
+
+      if (!ticket) {
+        return error_404(res, "Ticket not found for this route and date", null);
+      }
+
+      ok(res, "Ticket found", ticket);
+    } catch (error) {
+      server_error(res, error.message || "Internal server error", null);
+    }
   }
 };

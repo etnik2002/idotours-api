@@ -11,6 +11,7 @@ const { NotificationTypes, EnvTypes, PlatformTypes } = require('../helpers/types
 const { calculateFlexDates } = require("../functions/booking");
 const { sendBookingConfirmationEmail, sendBookingReceiptEmail, sendBookingConfirmationEmailWithAttachment, sendOperatorBookingNotification } = require("../helpers/email");
 const User = require("../models/User");
+const Agency = require("../models/Agency");
 const moment = require("moment-timezone");
 const { generateETicket, generateSingleETicket } = require("../helpers/pdf");
 
@@ -606,6 +607,80 @@ module.exports = {
       await ticket.save();
 
       return ok(res, "Manual booking created successfully", newBooking);
+    } catch (error) {
+      console.error(error);
+      return server_error(res, error.message, null);
+    }
+  },
+
+  createAgencyBooking: async (req, res) => {
+    try {
+      const { agency_id, ticket_id } = req.params;
+      const { passengers, total_price, stop, departure_station, arrival_station, departure_station_label, arrival_station_label, location } = req.body;
+
+      if (!passengers || passengers.length < 1) {
+        return bad_request(res, "Number of passengers should be at least one");
+      }
+
+      const [agency, ticket] = await Promise.all([
+        Agency.findById(agency_id),
+        Ticket.findById(ticket_id).populate("route_number")
+      ]);
+
+      if (!agency) return error_404(res, "Agency not found", null);
+      if (!ticket) return error_404(res, "Ticket not found", null);
+
+      if (passengers.length > ticket.number_of_tickets) {
+        return bad_request(res, "Not enough seats left");
+      }
+
+      const operator_id = ticket.operator || "69aedad561543c98e1b9b2ea";
+
+      const newBooking = new Booking({
+        agency: agency_id,
+        ticket: ticket_id,
+        operator: operator_id,
+        route: ticket.route_number?._id,
+        departure_date: stop?.departure_date || ticket.departure_date,
+        destinations: {
+          departure_station,
+          arrival_station,
+          departure_station_label,
+          arrival_station_label,
+        },
+        labels: {
+          from_city: stop?.from?.city || ticket.destination?.from,
+          to_city: stop?.to?.city || ticket.destination?.to,
+        },
+        price: total_price,
+        service_fee: 0,
+        passengers: passengers,
+        platform: PlatformTypes.WEB,
+        is_paid: true,
+        live_mode: process.env.ENV_TYPE == EnvTypes.PROD,
+        location: location || null,
+        metadata: {
+          travel_flex: "NO_FLEX",
+          message: "Agency booking"
+        },
+      });
+
+      await newBooking.save();
+
+      // Update agency financial data
+      agency.financial_data.total_sales = (agency.financial_data.total_sales || 0) + total_price;
+      const commission = (total_price * (agency.financial_data.percentage || 10)) / 100;
+      agency.financial_data.profit = (agency.financial_data.profit || 0) + commission;
+      agency.financial_data.debt = (agency.financial_data.debt || 0) + (total_price - commission);
+      await agency.save();
+
+      ticket.number_of_tickets -= passengers.length;
+      await ticket.save();
+
+      // Send confirmation email
+      await sendBookingConfirmationEmailWithAttachment(newBooking, req.body.language || "en");
+
+      return ok(res, "Agency booking created successfully", newBooking);
     } catch (error) {
       console.error(error);
       return server_error(res, error.message, null);

@@ -11,14 +11,10 @@ const agencySchema = mongoose.Schema({
         required: true,
         unique: true,
     },
-    operator: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Operator",
-    },
     password: {
         type: String,
         required: true,
-    },  
+    },
     role: {
         type: String,
         enum: ["agency"],
@@ -89,12 +85,12 @@ const agencySchema = mongoose.Schema({
         code: { type: String },
         valid_until: { type: Date },
     },
-} , { timestamps : true } );
+}, { timestamps: true });
 
 agencySchema.methods.generateAuthToken = function (data) {
     data.password = undefined;
     const token = jwt.sign({ data }, process.env.ACCESS_TOKEN_SECRET);
-    
+
     return token;
 };
 

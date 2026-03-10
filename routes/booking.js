@@ -2,7 +2,7 @@ const router = require("express").Router();
 
 const { verifyBookingFlex } = require("../auth/booking");
 const { requestLimiter } = require("../auth/limiter");
-const { getByRoute, getByOperator, getByAgencyId, getAll, create, createManualBooking, getByUserId, generateETicketForMobileAPI, scanBoardingPass, retreiveBookingByIdAndEmail, getByIdClient, getByIdOperator, editBookingDetails, cancelBookingAndRefund, rescheduleBooking, getByIds, downloadEBooking, upgradeTravelFlex, getTotalBookingsCountByOperatorId, downloadEBookingMobileAPI } = require("../controllers/booking-controller");
+const { getByRoute, getByOperator, getByAgencyId, getAll, create, createAgencyBooking, createManualBooking, getByUserId, generateETicketForMobileAPI, scanBoardingPass, retreiveBookingByIdAndEmail, getByIdClient, getByIdOperator, editBookingDetails, cancelBookingAndRefund, rescheduleBooking, getByIds, downloadEBooking, upgradeTravelFlex, getTotalBookingsCountByOperatorId, downloadEBookingMobileAPI } = require("../controllers/booking-controller");
 const apicache = require("apicache");
 const { saveNewDepartureDate } = require("../controllers/ticket-controller");
 const { refund } = require("../controllers/payment-controller");
@@ -21,6 +21,7 @@ router.post('/download/pdf/mobile/:booking_id', downloadEBookingMobileAPI)
 router.post("/create/:operator_id/:user_id/:ticket_id", create);
 
 router.post("/create-manual", createManualBooking);
+router.post("/create-agency/:agency_id/:ticket_id", createAgencyBooking);
 
 router.post('/:booking_id/upgrade-flex', upgradeTravelFlex)
 
