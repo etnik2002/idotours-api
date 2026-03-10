@@ -1,0 +1,197 @@
+[
+    {
+        "name": "Kaleia Bus Company",
+        "email": "kaleia@mail.com",
+        "phone": "+359 894 77 44 43",
+        "address": "ul. 'Struga', Sofia, Bulgaria"
+    },
+    {
+        "name": "Union Ivkoni Bus Company",
+        "email": "booking@union-ivkoni.com",
+        "address": "Kn. Maria Luisa №102, Sofia, Bulgaria"
+    },
+    {
+        "name": "Karat - S Bus Company",
+        "email": "operations@eurolines.bg",
+        "phone": "+359 2 8120814",
+        "address": "35 Mechka Street, Sofia, Bulgaria"
+    },
+    {
+        "name": "Arda tur Bus Company",
+        "phone": "0700 20 544",
+        "address": "'Saedinenie' 45, Haskovo, Bulgaria"
+    },
+    {
+        "name": "Global Biomet EOOD Bus Company",
+        "email": "viki@biomet.bg",
+        "phone": "+359 (2) 9884551",
+        "address": "35 N.I.Vaptzarov Blvd, Sofia, Bulgaria"
+    },
+    {
+        "name": "Matpu Bus Company",
+        "email": "matpu96@abv.bg",
+        "phone": "+359 2 952 50 04",
+        "address": "ul. 'Odesa' 34, Sofia, Bulgaria"
+    },
+    {
+        "name": "Pegasus Bus Company",
+        "email": "pegasus@pegasusbg.com",
+        "phone": "+359 877 34 47 47",
+        "address": "156 Tsar Osvoboditel Blvd, Ruse, Bulgaria"
+    },
+    {
+        "name": "CityLines Bus Company",
+        "email": "support@citylines.bg",
+        "phone": "+359 2 812 0810",
+        "address": "Sofia, Bulgaria"
+    },
+    {
+        "name": "ETAP Bus Company",
+        "email": "transport@etapgroup.com",
+        "phone": "+359 2 989 00 00",
+        "address": "102 Maria Louisa Blvd., Sofia, Bulgaria"
+    },
+    {
+        "name": "Traventuria Bus Company",
+        "address": "54 Gorski Patnik Str., Bulgaria"
+    },
+    {
+        "name": "Florentia bus Bulgaria Bus Company",
+        "email": "info@florentiabus.bg",
+        "phone": "+359 2 980 56 58",
+        "address": "Boulevard 'Maria Louisa' № 102, Sofia, Bulgaria"
+    },
+    {
+        "name": "GlobusEs Bus Company",
+        "email": "globuses@abv.bg",
+        "phone": "+359 899 418080",
+        "address": "Hadji Dimitar Square 11, Sliven, Bulgaria"
+    },
+    {
+        "name": "Racic Eurobus Bus Company",
+        "email": "racic_bg@yahoo.com",
+        "phone": "+359-887-208-506",
+        "address": "25 General Gurko Str, Plovdiv, Bulgaria"
+    },
+    {
+        "name": "Doris Bus Company",
+        "email": "reservation@doris-bg.com",
+        "phone": "+35944/662423",
+        "address": "5-B Dimitar Dobrovich Str., Sliven, Bulgaria"
+    },
+    {
+        "name": "Sarnela Bus Company",
+        "email": "office@sarnela.com",
+        "phone": "+359 888 64 56 66",
+        "address": "st. 'Zhelezarska' 12, Plovdiv, Bulgaria"
+    },
+    {
+        "name": "Valeross Bus Company",
+        "email": "valeross_holiday@abv.bg",
+        "address": "3-a-2 Georgi Drazhev Str., Yambol, Bulgaria"
+    },
+    {
+        "name": "Radina VIP Bus Company",
+        "email": "radinavip@gmail.com",
+        "phone": "+359 879 321 588",
+        "address": "Bus Station 'Serdika' office 65, Sofia, Bulgaria"
+    },
+    {
+        "name": "Rally 13 Bus Company",
+        "email": "office@rally13.com",
+        "phone": "+359 896 836 555",
+        "address": "ul., Sofia, Bulgaria"
+    },
+    {
+        "name": "Albena Autotrans Bus Company",
+        "email": "office@albenaautotrans.com",
+        "phone": "+359 57 962 088",
+        "address": "Albena Resort, Balchik, Bulgaria"
+    },
+    {
+        "name": "Boydevi Bus Company",
+        "email": "boydevi@abv.bg",
+        "phone": "+359 888141293",
+        "address": "18 Stefan Karadja Str, Svilengrad, Bulgaria"
+    },
+    {
+        "name": "Has Turizm Bus Company",
+        "email": "office@hasturizm.bg",
+        "phone": "+359 2 831 49 67",
+        "address": "'SERDIKA' Bus Station, Office No: 121, Sofia, Bulgaria"
+    },
+    {
+        "name": "Elit97 Bus Company",
+        "email": "ELIT97@ABV.BG",
+        "phone": "+359 889/427 526",
+        "address": "Republic Square, Pleven, Bulgaria"
+    },
+    {
+        "name": "BurgasBus Bus Company",
+        "phone": "+359 56 810 943",
+        "address": "Aleksandrovska 106, Burgas, Bulgaria"
+    },
+    {
+        "name": "Dichoni Bus Company",
+        "email": "dichoni5152@abv.bg",
+        "phone": "+359 46/66 18 43",
+        "address": "Yambol, Bulgaria"
+    },
+    {
+        "name": "Hebrosbus Bus Company",
+        "email": "office@hebrosbus.com",
+        "address": "1 Makedonia Blvd., Plovdiv, Bulgaria"
+    },
+    {
+        "name": "Krasenharmani Bus Company",
+        "phone": "+359 879/067 004",
+        "address": "Olimpy Panov Str. 14, Rousse, Bulgaria"
+    },
+    {
+        "name": "Balkan Horn Bus Company",
+        "email": "office@balkanhorn.com",
+        "phone": "0700 189 98",
+        "address": "Str. Trolley 48, Varna, Bulgaria"
+    },
+    {
+        "name": "Ovanesovi Group Bus Company",
+        "phone": "+359 82 872 000",
+        "address": "Olimp Panov Str, Ruse, Bulgaria"
+    },
+    {
+        "name": "Group Bus Company",
+        "email": "krasigroup@abv.bg",
+        "phone": "+359 2 980 63 36",
+        "address": "Busstation 'Serdika' - office 41, Sofia, Bulgaria"
+    },
+    {
+        "name": "Shumenpat Bus Company",
+        "email": "ianakev@shumenpat.com",
+        "phone": "+359 884377877",
+        "address": "Bulgaria"
+    },
+    {
+        "name": "Torre Bus Company",
+        "email": "torretravel@yahoo.bg",
+        "phone": "+359 889 / 634 902",
+        "address": "8 Bulgaria Blvd., Harmanli, Bulgaria"
+    },
+    {
+        "name": "Omega group 84 Bus Company",
+        "email": "omega_group@abv.bg",
+        "phone": "+359 878 155 116",
+        "address": "бул. Вл.Варненчик 158, Varna, Bulgaria"
+    },
+    {
+        "name": "Air Kona Bus Company",
+        "email": "tickets@airkona.com",
+        "phone": "+359 2 971 11 11",
+        "address": "Mariya Luiza 102, Sofia, Bulgaria"
+    },
+    {
+        "name": "Tourist Service Bus Company",
+        "email": "info@tourist-service.com",
+        "phone": "+359 2 931 00 62",
+        "address": "Klokotnitsa Str. 1, Sofia, Bulgaria"
+    }
+]

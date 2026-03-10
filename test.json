@@ -1,0 +1,34 @@
+{
+    "route_number":"66cd809061735c8a0c57f783",
+    "time":"15:00",
+    "destination":{
+       "from":"skopje",
+       "to":"berlin"
+    },
+    "stops":[
+       {
+          "from":"66cd7f489c15be36612ba9f1",
+          "to":"66d58e9a152a2808022f2246",
+          "time":"07:00",
+          "departure_date":"2024-08-27T14:30:24.729+00:00",
+          "arrival_time":"2024-08-28T17:30:24.729+00:00",
+          "max_buying_time":"2024-08-27T14:15:24.729+00:00",
+          "price":100,
+          "children_price":80
+       }
+    ],
+    "days_of_week":[
+       "1",
+       "2"
+    ],
+    "weeks_to_generate":2,
+    "metadata":{
+       "operator_name":"Muiz travel",
+       "operator_company_name":"Muiz travel D.O.O",
+       "features":[
+          "wifi",
+          "ac/heating",
+          "usb charging ports"
+       ]
+    }
+ }

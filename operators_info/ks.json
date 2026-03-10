@@ -1,0 +1,105 @@
+[
+    {
+        "name": "Vetoni Tourist",
+        "email": "vetonitouristsh.p.k@gmail.com",
+        "phone": "+383 44 317 988",
+        "address": "Rr,B, Prishtine,10000"
+    },
+    {
+        "name": "Albus Travel Bus Company",
+        "email": null,
+        "phone": "+383 49649414",
+        "address": "Përroi i njelmët, Vasil Laçi, Kosovo"
+    },
+    {
+        "name": "SHARR TRAVEL",
+        "email": "info@sharrtravel.com",
+        "phone": "+383 38 610 015",
+        "address": "Përroi i njelmët, Vasil Laçi, Kosovo",
+        "website": "https://sharrtravel.com"
+    },
+    {
+        "name": "Vector Travel Group Bus Company",
+        "email": null,
+        "phone": "+386 49139918",
+        "address": "Rr. Jeronim de Rada, Kosovo"
+    },
+    {
+        "name": "Erhan Trans Bus Company",
+        "email": null,
+        "phone": "+383 48607607",
+        "address": "De Rada, Kosovo"
+    },
+    {
+        "name": "Kabashi Tours Bus Company",
+        "email": null,
+        "phone": "+383 49858018",
+        "address": "William Walker Street, Kosovo"
+    },
+    {
+        "name": "Arbeni Tours Bus Company",
+        "email": null,
+        "phone": "+383 44115097",
+        "address": "Ahmet Kaqiku, Kosovo"
+    },
+    {
+        "name": "Albani Tours Bus Company",
+        "email": null,
+        "phone": "+383 49112555",
+        "address": "Koshare, Kosovo"
+    },
+    {
+        "name": "Tirana Metropol Bus Company",
+        "email": null,
+        "phone": null,
+        "address": "Bulevardi zogu i pare.mbrapa 15-kateshit, Tiranë, Kosovo"
+    },
+    {
+        "name": "Meti Comerc Bus Company",
+        "email": "meticomercc@hotmail.com",
+        "phone": "+383 44 198 634",
+        "address": "Kol Lleshi, Gjakovë, Kosovo"
+    },
+    {
+        "name": "Barileva Turist Bus Company",
+        "email": "barileva-turist@hotmail.com",
+        "phone": "+381 38 243 581",
+        "address": "Rr. UÇK, Prishtinë, Kosovo"
+    },
+    {
+        "name": "Beli Travel Bus Company",
+        "email": null,
+        "phone": "+383 44113710",
+        "address": "St. Lidhja e Pejës PN, Kosovo"
+    },
+    {
+        "name": "Arditi Tours Bus Company",
+        "email": null,
+        "phone": "+383 49 871 234",
+        "address": "Bulevardi Bill Clinton, Pristina, Kosovo"
+    },
+    {
+        "name": "Planet Reisen",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Memi Reisen",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Amalfi Tours",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Vellezerit Thaqi",
+        "email": null,
+        "phone": null,
+        "address": null
+    }
+]

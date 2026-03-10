@@ -1,0 +1,16 @@
+{
+  "passTypeIdentifier": "pass.gobusly.wallet",
+  "teamIdentifier": "2C6N68U24F",
+  "formatVersion": 1,
+  "organizationName": "GoBusly",
+  "description": "Bus Ticket",
+  "suppressStripShine": false,
+  "sharingProhibited": false,
+  "boardingPass": {
+    "transitType": "PKTransitTypeBus",
+    "primaryFields": [],
+    "secondaryFields": [],
+    "auxiliaryFields": [],
+    "backFields": []
+  }
+}

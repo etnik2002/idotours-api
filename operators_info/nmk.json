@@ -1,0 +1,135 @@
+[
+    {
+        "name": "Makedonija Soobrakaj A.D. Bus Company",
+        "email": "avtobuska@maksoob.com.mk",
+        "phone": "+389 (0) 2 24 02 388",
+        "address": "Gradski zid br. 13, Skopje, North Macedonia"
+    },
+    {
+        "name": "Step Tours ",
+        "email": "steptours@gmail.com",
+        "phone": "070 935 300",
+        "address": "zi"
+    },
+    {
+        "name": "Classic Company Bus Company",
+        "email": "classik.kompani@hotmail.com",
+        "phone": null,
+        "address": "Goce Delcev 268, Ohrid, North Macedonia"
+    },
+    {
+        "name": "Hafet Tours Bus Company",
+        "email": "hafet-tours@hotmail.com",
+        "phone": "+389 44371066",
+        "address": "Kralja Petra Svačića 30, Pirok, Tetovo, North Macedonia"
+    },
+    {
+        "name": "Galeb Bus Company",
+        "email": "info@galeb.mk",
+        "phone": "+389 46 251-882",
+        "address": "Pitu Guli Nr.4, Ohrid, North Macedonia"
+    },
+    {
+        "name": "Euro Bus Company",
+        "email": null,
+        "phone": "+389 71 305 472",
+        "address": "Partizanska bb, Struga, North Macedonia"
+    },
+    {
+        "name": "Senad Tours Bus Company",
+        "email": "info@senadtours.com",
+        "phone": "+389 70 212 106",
+        "address": "Veleshta - Struga, North Macedonia"
+    },
+    {
+        "name": "Rule Turs Bus Company",
+        "email": "ruleturs@sas.com.mk",
+        "phone": null,
+        "address": "Jul. Nikola Karev No.20, Skopje, North Macedonia"
+    },
+    {
+        "name": "Ganić Exclusive Bus Company",
+        "email": null,
+        "phone": "+389 70215697",
+        "address": "Kej 13 Noemvri 1, North Macedonia"
+    },
+    {
+        "name": "Hisar Turizam Bus Company",
+        "email": null,
+        "phone": "+386 41520943",
+        "address": "Nikola Karev 20, North Macedonia"
+    },
+    {
+        "name": "WTransporter Bus Company",
+        "email": null,
+        "phone": "+389 71344691",
+        "address": "Jurij Gagarin 17, North Macedonia"
+    },
+    {
+        "name": "Vardar Express Bus Company",
+        "email": null,
+        "phone": "+389 22402394",
+        "address": "Ul. 28 br. 5, North Macedonia"
+    },
+    {
+        "name": "Eurolines Struga Bus Company",
+        "email": "eurolines.strugamk@gmail.com",
+        "phone": "+389 46 780 801, +389 71 277 4",
+        "address": "Marks i Engels 1, Struga, North Macedonia"
+    },
+    {
+        "name": "Varder Express Bus Company",
+        "email": "info@vardarexpress.com",
+        "phone": "+389 2 3118-263",
+        "address": "st. 343 No.13, Skopje, North Macedonia"
+    },
+    {
+        "name": "Rasim Turizam Bus Company",
+        "email": "info@rasimturizam.com",
+        "phone": "+389 46 780 358",
+        "address": "Partizanska nn, Struga, North Macedonia"
+    },
+    {
+        "name": "Transkop Bus Company",
+        "email": "info@transkop.mk",
+        "phone": "+389 47 231 420",
+        "address": "Nikola Tesla 160, Bitola, North Macedonia"
+    },
+    {
+        "name": "Durmo Tours Bus Company",
+        "email": "durmotours@yahoo.com",
+        "phone": "+389 42 217 370",
+        "address": "Dimitar Vlahov, Gostivar, North Macedonia"
+    },
+    {
+        "name": "Arbi Reisen GmbH",
+        "email": "info@arbi-reisen.de",
+        "phone": "040 75061506",
+        "address": "Wittestr. 1 D-21109 Hamburg",
+        "website": "https://arbi-reisen.de/site/startseite/"
+    },
+    {
+        "name": "Step Tours Bus Company",
+        "email": "steptours@gmail.com",
+        "phone": "+389 44 332 350",
+        "address": "Tetovo, North Macedonia"
+    },
+    {
+        "name": "Nasir Tours Bus Company",
+        "email": null,
+        "phone": "+389 42 218 007",
+        "address": "Beliçica 14, Gostivar, North Macedonia"
+    },
+    {
+        "name": "Bashkim Turs",
+        "email": null,
+        "phone": "+389 44 338 003 ose 070 321 464",
+        "address": "afer shkolles fillore Liria"
+    },
+    {
+        "name": "IDO TOURS",
+        "email": "info@idotours.com.mk",
+        "phone": "+389 075 468 055",
+        "address": "Борис Кидрич, Tetovo 1200"
+    }
+]

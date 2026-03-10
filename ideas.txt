@@ -1,0 +1,7 @@
+operator subscriptions:
+    agents: 20$ / month
+    drivers and scannings: 20$ / month
+
+FRONTEND:
+    TODO: 
+        phone number on checkout with library

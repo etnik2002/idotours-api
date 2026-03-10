@@ -1,0 +1,134 @@
+[
+    {
+        "name": "Drita Travel Bus Company",
+        "email": ["eurodrita@yahoo.com", "infodrita@yahoo.com"],
+        "phone": "+355 42257663",
+        "address": "Rruga Urani Pano, Tirana, Albania"
+    },
+    {
+        "name": "Adis Durres Bus Company",
+        "email": "info@adis.al",
+        "phone": "+355 68 22 90 722",
+        "address": "Rr. Adria, Durres, Albania"
+    },
+    {
+        "name": "Luna Travel Bus Company",
+        "email": null,
+        "phone": "+355 689006146",
+        "address": "Rr.Durresit, Pall. Fratari, Kulla nr.1, Kati 1, Albania"
+    },
+    {
+        "name": "Auloni Tours",
+        "email": null,
+        "phone": "+355697756666",
+        "address": "Rruga Haxhi Sedja"
+    },
+    {
+        "name": "Skenderbeu ShpK Bus Company",
+        "email": null,
+        "phone": "+355692025013",
+        "address": "Rr. Mine Peza, Pallati 1, Tirana, Albania"
+    },
+    {
+        "name": "AlbTrans Bus Company",
+        "email": "albtrans06@yahoo.com",
+        "phone": "+355 4 2239 203",
+        "address": "Bulevardi Zogu I, Tirana, Albania"
+    },
+    {
+        "name": "Maba Viaggi Bus Company",
+        "email": null,
+        "phone": "+355 69 758 0270",
+        "address": "Rruga Dritan Hoxha, Tiranë, Albania"
+    },
+    {
+        "name": "Artani Travel Bus Company",
+        "email": "info@artanitravel.com",
+        "phone": "+355 69 31 41 219",
+        "address": "Sheshi Demokracia 22, Shkodër, Albania"
+    },
+    {
+        "name": "Komatas Tours Bus Company",
+        "email": "komatastours.al@gmail.com",
+        "phone": "00355 68 40 76607",
+        "address": "Bulevardi “ Zogu i Parë”, Tirana, Albania"
+    },
+    {
+        "name": "Express Tours Bus Company",
+        "email": null,
+        "phone": "+355 69 669 9063",
+        "address": "Asllan Rusi Zyra Numer 8, Tirana, Albania"
+    },
+    {
+        "name": "Albmania Bus Company",
+        "email": null,
+        "phone": "+355 69 202 4511",
+        "address": "Rr. Arkitekt Kasemi, P. Hodo, K.1, Tiranë, Albania"
+    },
+    {
+        "name": "Osumi Travel Bus Company",
+        "email": "osumitravel@live.com",
+        "phone": "+355 69 603 2832",
+        "address": "Bulevardi Zogu i 1-rë, Tirana, Albania"
+    },
+    {
+        "name": "AlbaTrans Bus Company",
+        "email": "info@albatrans.com.al",
+        "phone": "+355 684 060 001",
+        "address": "Blv. 'Zog I' Nr. 97, Tirana, Albania"
+    },
+    {
+        "name": "Candy Tours",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Kei Reisen - Edi & Sena",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Nela Travel and Tours",
+        "email": null,
+        "phone": "+355683974200",
+        "address": "Farke e madhe, Rr. 1045 Farke e Madhe"
+    },
+    {
+        "name": "Skenderbeu shpk",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "AMR Travel",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "M&B Travel",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Arjani travel",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Arkleand Bus",
+        "email": null,
+        "phone": null,
+        "address": null
+    },
+    {
+        "name": "Express Tours",
+        "email": null,
+        "phone": null,
+        "address": null
+    }
+]
