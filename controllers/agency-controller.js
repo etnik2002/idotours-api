@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const { users } = require("../appwrite/appwrite.config");
 const { sendOtp } = require("../helpers/email");
+const moment = require("moment-timezone");
 
 module.exports = {
   createAgency: async (req, res) => {
@@ -247,6 +248,58 @@ module.exports = {
     }
   },
 
+  payAgencyMonthlyDebt: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { year, month } = req.body;
+
+      if (!year || !month) {
+        return bad_request(res, "Year and month are required", null);
+      }
+
+      const agency = await Agency.findById(id).select("financial_data.percentage financial_data.debt");
+      if (!agency) {
+        return error_404(res, "Agency not found", null);
+      }
+
+      const percentage = agency.financial_data?.percentage || 0;
+      const startOfMonth = moment.utc().year(year).month(month - 1).startOf('month').toDate();
+      const endOfMonth = moment.utc().year(year).month(month - 1).endOf('month').toDate();
+
+      const unpaidBookings = await Booking.find({
+        agency: id,
+        is_paid: { $in: [true, "true"] },
+        is_agency_debt_paid: { $ne: true },
+        createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+      }).select("price");
+
+      if (unpaidBookings.length === 0) {
+        return bad_request(res, "No unpaid debts found for this month.", null);
+      }
+
+      const totalSalesForMonth = unpaidBookings.reduce((acc, booking) => acc + (booking.price || 0), 0);
+      const commission = (totalSalesForMonth * percentage) / 100;
+      const debtToMarkAsPaid = totalSalesForMonth - commission;
+
+      await Booking.updateMany(
+        {
+          _id: { $in: unpaidBookings.map(b => b._id) }
+        },
+        { $set: { is_agency_debt_paid: true } }
+      );
+
+      agency.financial_data.debt = Math.max(0, (agency.financial_data.debt || 0) - debtToMarkAsPaid);
+      await agency.save();
+
+      ok(res, "Agency debt for specified month marked as paid and deducted from total debt", {
+        deducted_amount: debtToMarkAsPaid,
+        remaining_total_debt: agency.financial_data.debt
+      });
+    } catch (error) {
+      server_error(res, error.message || error, null);
+    }
+  },
+
   getMonthlySalesReport: async (req, res) => {
     try {
       const { id } = req.params;
@@ -262,7 +315,7 @@ module.exports = {
         {
           $match: {
             agency: new mongoose.Types.ObjectId(id),
-            is_paid: "true"
+            is_paid: { $in: [true, "true"] }
           }
         },
         {
@@ -272,7 +325,8 @@ module.exports = {
               month: { $month: "$createdAt" }
             },
             total_sales: { $sum: "$price" },
-            booking_count: { $sum: 1 }
+            booking_count: { $sum: 1 },
+            is_settled: { $min: { $cond: [{ $eq: ["$is_agency_debt_paid", true] }, 1, 0] } }
           }
         },
         {
@@ -282,6 +336,7 @@ module.exports = {
             month: "$_id.month",
             total_sales: 1,
             booking_count: 1,
+            is_settled: { $cond: [{ $eq: ["$is_settled", 1] }, true, false] },
             profit: {
               $divide: [
                 { $multiply: ["$total_sales", percentage] },
@@ -289,12 +344,18 @@ module.exports = {
               ]
             },
             debt: {
-              $subtract: [
-                "$total_sales",
+              $cond: [
+                { $eq: ["$is_settled", 1] },
+                0,
                 {
-                  $divide: [
-                    { $multiply: ["$total_sales", percentage] },
-                    100
+                  $subtract: [
+                    "$total_sales",
+                    {
+                      $divide: [
+                        { $multiply: ["$total_sales", percentage] },
+                        100
+                      ]
+                    }
                   ]
                 }
               ]

@@ -550,7 +550,7 @@ module.exports = {
 
   createManualBooking: async (req, res) => {
     try {
-      const operator_id = "69aedad561543c98e1b9b2ea";
+      const operator_id = process.env.HARDCODED_OPERATOR_ID;
       const {
         ticket_id,
         passengers,
@@ -634,7 +634,7 @@ module.exports = {
         return bad_request(res, "Not enough seats left");
       }
 
-      const operator_id = ticket.operator || "69aedad561543c98e1b9b2ea";
+      const operator_id = ticket.operator || process.env.HARDCODED_OPERATOR_ID;
 
       const newBooking = new Booking({
         agency: agency_id,

@@ -115,6 +115,10 @@ const bookingSchema = mongoose.Schema({
         enum: ['true', 'false'],
         default: 'true',
     },
+    is_agency_debt_paid: {
+        type: Boolean,
+        default: false,
+    },
     metadata: {
         transaction_id: {
             type: String,

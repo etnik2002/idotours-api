@@ -8,7 +8,7 @@ const Booking = require('../models/Booking');
 const Station = require('../models/Station');
 const Operator = require('../models/Operator');
 
-const OPERATOR_ID = '69aedad561543c98e1b9b2ea';
+const OPERATOR_ID = 'process.env.HARDCODED_OPERATOR_ID';
 const DB_URL = process.env.DATABASE_URL || process.env.PROD_DATABASE_URL;
 
 async function run() {

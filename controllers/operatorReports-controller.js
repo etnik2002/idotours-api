@@ -1,3 +1,4 @@
+require('dotenv').config();
 const moment = require("moment-timezone");
 const { server_error, ok, bad_request, unauthorized } = require("../functions/responses");
 const Booking = require("../models/Booking");
@@ -8,7 +9,7 @@ const { generatePassengerManifestPDF } = require("../helpers/pdf");
 module.exports = {
     getTotalRevenue: async (req, res) => {
         try {
-            const operatorId = "69aedad561543c98e1b9b2ea";
+            const operatorId = process.env.HARDCODED_OPERATOR_ID;
 
             const startOfMonth = moment.utc().startOf("month").toDate()
             const endOfMonth = moment.utc().endOf("month").toDate()
@@ -16,19 +17,19 @@ module.exports = {
             const thisMonthPipeline = [
                 {
                     $match: {
-                        operator: operatorId,
+                        operator: new mongoose.Types.ObjectId(operatorId),
                         createdAt: {
                             $gte: startOfMonth,
                             $lte: endOfMonth
                         },
-                        'metadata.refund_action.is_refunded': false,
+                        'metadata.refund_action.is_refunded': { $ne: true },
                     }
                 },
                 {
                     $group: {
                         _id: "$operator",
                         total_revenue: {
-                            $sum: { $subtract: ["$price", "$service_fee"] }
+                            $sum: "$price"
                         }
                     }
                 },
@@ -45,15 +46,15 @@ module.exports = {
             const pipeline = [
                 {
                     $match: {
-                        operator: operatorId,
-                        'metadata.refund_action.is_refunded': false,
+                        operator: new mongoose.Types.ObjectId(operatorId),
+                        'metadata.refund_action.is_refunded': { $ne: true },
                     }
                 },
                 {
                     $group: {
                         _id: "$operator",
                         total_revenue: {
-                            $sum: { $subtract: ["$price", "$service_fee"] }
+                            $sum: "$price"
                         },
                         total_passengers: {
                             $sum: { $size: "$passengers" }
@@ -73,11 +74,11 @@ module.exports = {
             const ticketPipeline = [
                 {
                     $match: {
-                        operator: operatorId,
+                        operator: new mongoose.Types.ObjectId(operatorId),
                     }
                 },
                 {
-                    $unwind: "$stops"
+                    $unwind: { path: "$stops", preserveNullAndEmptyArrays: true }
                 },
                 {
                     $group: {
@@ -140,7 +141,7 @@ module.exports = {
             const start_of_month = moment.utc().year(year).month(month).startOf('month').toDate();
             const end_of_month = moment.utc().year(year).month(month).endOf('month').toDate();
 
-            const operator_id = "69aedad561543c98e1b9b2ea";
+            const operator_id = process.env.HARDCODED_OPERATOR_ID;
             if (!operator_id || operator_id === "") {
                 unauthorized(res, "Not authorized", null);
             }
@@ -153,7 +154,7 @@ module.exports = {
                             $gte: start_of_month,
                             $lte: end_of_month,
                         },
-                        'metadata.refund_action.is_refunded': false,
+                        'metadata.refund_action.is_refunded': { $ne: true },
                     }
                 },
                 {
@@ -182,7 +183,7 @@ module.exports = {
 
     lastFiveBookings: async (req, res) => {
         try {
-            const bookings = await Booking.find({ operator: "69aedad561543c98e1b9b2ea" }).select('passengers price service_fee createdAt labels').sort({ createdAt: 'desc' }).limit(5);
+            const bookings = await Booking.find({ operator: process.env.HARDCODED_OPERATOR_ID }).select('passengers price service_fee createdAt labels').sort({ createdAt: 'desc' }).limit(5);
             if (!bookings) {
                 bad_request(res, error.message, null);
             }
@@ -195,7 +196,7 @@ module.exports = {
 
     getPassengerManifest: async (req, res) => {
         try {
-            const operator_id = "69aedad561543c98e1b9b2ea";
+            const operator_id = process.env.HARDCODED_OPERATOR_ID;
             const { date } = req.query;
 
             let searchDate = date ? moment.utc(date).startOf('day').toDate() : moment.utc().startOf('day').toDate();
@@ -207,7 +208,7 @@ module.exports = {
                     $gte: searchDate,
                     $lte: endOfSearchDate
                 },
-                is_paid: 'true'
+                is_paid: { $in: [true, 'true'] }
             })
                 .populate('ticket')
                 .populate('route')
@@ -269,7 +270,7 @@ module.exports = {
                     $gte: searchDate,
                     $lte: endOfSearchDate
                 },
-                is_paid: 'true'
+                is_paid: { $in: [true, 'true'] }
             })
                 .populate('destinations.departure_station')
                 .populate('route');
