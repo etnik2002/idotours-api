@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { generateETicketTranslations, interpolate } = require('./translations/booking');
 
-const logoPath = path.join(__dirname, 'assets', 'busly-removebg-preview.png');
+const logoPath = path.join(__dirname, 'assets', 'cfajdo.png');
 const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
 
 const generateETicket = async (booking, language = 'en') => {
@@ -24,11 +24,11 @@ const generateETicket = async (booking, language = 'en') => {
         const passenger = booking.passengers[i];
 
         const passengerHtml = `
-        <div class="passenger-item" style="margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; background: #f9fafb;">
-            <div class="passenger-title" style="font-weight: 600; font-size: 1rem; margin-bottom: 1rem; color: #1a1a1a;">
+        <div class="passenger-item" style="margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #dbeafe; border-radius: 0.5rem; background: #f0f9ff;">
+            <div class="passenger-title" style="font-weight: 600; font-size: 1rem; margin-bottom: 1rem; color: #1e3a8a;">
                 ${interpolate(t.passengerTitle, { number: i + 1 })}
             </div>
-            <div class="passenger-details" style="font-size: 0.875rem; color: #1a1a1a;">
+            <div class="passenger-details" style="font-size: 0.875rem; color: #1e293b;">
                 <div style="margin-bottom: 0.5rem;"><strong>${t.name}</strong> ${passenger.full_name}</div>
                 ${passenger.phone ? `<div style="margin-bottom: 0.5rem;"><strong>${t.phone}</strong> ${passenger.phone}</div>` : ''}
                 ${passenger.email ? `<div style="margin-bottom: 0.5rem;"><strong>${t.email}</strong> ${passenger.email}</div>` : ''}
@@ -47,50 +47,50 @@ const generateETicket = async (booking, language = 'en') => {
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
                 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-                body { background-color: #ffffff; color: #1a1a1a; line-height: 1.5; }
-                .container { max-width: 800px; margin: 0 auto; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; }
-                .header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; }
+                body { background-color: #ffffff; color: #1e293b; line-height: 1.5; }
+                .container { max-width: 800px; margin: 0 auto; background: white; border: 1px solid #dbeafe; border-radius: 0.5rem; overflow: hidden; }
+                .header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dbeafe; }
                 .logo { width: 120px; height: 60px; object-fit: contain; }
-                .booking-id { font-size: 0.875rem; color: #6b7280; }
-                .main-content { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #e5e7eb; }
+                .booking-id { font-size: 0.875rem; color: #64748b; }
+                .main-content { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #dbeafe; }
                 .left-column, .right-column { padding: 1.5rem; }
-                .left-column { border-right: 1px dashed #e5e7eb; }
+                .left-column { border-right: 1px dashed #dbeafe; }
                 .destination-info { margin-bottom: 2rem; }
-                .date { font-weight: 500; margin-bottom: 0.5rem; }
+                .date { font-weight: 500; margin-bottom: 0.5rem; color: #1e3a8a; }
                 .route { display: flex; gap: 1rem; height: 9rem; position: relative; }
-                .times { display: flex; flex-direction: column; justify-content: space-between; font-weight: 500; height: 100%; }
-                .inner-line { height:100%; border-right:2px dashed #ff4545; }
+                .times { display: flex; flex-direction: column; justify-content: space-between; font-weight: 500; height: 100%; color: #2563eb; }
+                .inner-line { height:100%; border-right:2px dashed #2563eb; }
                 .route-line { height:140px; justify-content:space-between; display: flex; flex-direction: column; align-items: center; position: relative; padding: 0.25rem 0; }
-                .route-line::after { content: ''; position: absolute; top: 1.25rem; bottom: 1.25rem; width: 0.125rem; background-color: #ff4545; border-radius: 9999px; z-index: 0; }
-                .dot { width: 1.25rem; height: 1.25rem; background-color: #ff4545; border-radius: 9999px; position: relative; z-index: 1; }
+                .route-line::after { content: ''; position: absolute; top: 1.25rem; bottom: 1.25rem; width: 0.125rem; background-color: #2563eb; border-radius: 9999px; z-index: 0; }
+                .dot { width: 1.25rem; height: 1.25rem; background-color: #2563eb; border-radius: 9999px; position: relative; z-index: 1; }
                 .locations { display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
                 .location { display: flex; flex-direction: column; }
-                .location-name { font-weight: 500; text-transform: capitalize; }
-                .location-details { font-size: 0.875rem; color: #6b7280; }
-                .operator-info { margin-top: 2rem; border: 1px solid #ff4545; border-radius: 0.5rem; padding: 0.5rem 1rem; }
-                .operator-title { display: flex; align-items: center; gap: 0.5rem; color: #ff4545; font-weight: 600; }
+                .location-name { font-weight: 500; text-transform: capitalize; color: #1e3a8a; }
+                .location-details { font-size: 0.875rem; color: #64748b; }
+                .operator-info { margin-top: 2rem; border: 1px solid #2563eb; border-radius: 0.5rem; padding: 0.5rem 1rem; background-color: #f0f9ff; }
+                .operator-title { display: flex; align-items: center; gap: 0.5rem; color: #2563eb; font-weight: 600; }
                 .operator-name { text-transform: uppercase; }
-                .operator-text { font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; }
+                .operator-text { font-size: 0.875rem; color: #64748b; margin-top: 0.25rem; }
                 .qr-section { display: flex; justify-content: center; margin: 1.5rem 0; }
-                .qr-code { padding: 0.5rem; background: white; border-radius: 0.5rem; width: 160px; height: 160px; }
+                .qr-code { padding: 0.5rem; background: white; border-radius: 0.5rem; width: 160px; height: 160px; border: 1px solid #dbeafe; }
                 .passenger-info { display: block; width: 100%; }
-                .section-title { font-size: 1.125rem; font-weight: 500; margin-bottom: 1.5rem; }
+                .section-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e3a8a; }
                 .info-item { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem; }
-                .info-icon { width: 1.25rem; height: 1.25rem; margin-top: 0.125rem; flex-shrink: 0; }
+                .info-icon { width: 1.25rem; height: 1.25rem; margin-top: 0.125rem; flex-shrink: 0; color: #2563eb; }
                 .info-content { flex: 1; min-width: 0; }
-                .info-label { font-size: 0.875rem; color: #6b7280; }
-                .info-value { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                .info-label { font-size: 0.875rem; color: #64748b; }
+                .info-value { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #1e293b; }
                 .terms { margin-top: 1.5rem; padding-top: 1.5rem; }
-                .terms-text { font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem; }
-                .link { color: #ff4545; text-decoration: none; }
+                .terms-text { font-size: 0.75rem; color: #64748b; margin-top: 0.5rem; }
+                .link { color: #2563eb; text-decoration: none; }
                 .link:hover { text-decoration: underline; }
-                .footer { text-align: center; padding: 1rem 1.5rem; font-size: 0.875rem; color: #1a1a1a; }
+                .footer { text-align: center; padding: 1rem 1.5rem; font-size: 0.875rem; color: #64748b; border-top: 1px solid #dbeafe; background-color: #f8fafc; }
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="header">
-                    <img src="data:image/png;base64,${logoBase64}" alt="GoBusly" class="logo">
+                    <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
                     <div class="booking-id">${t.bookingId} ${booking?._id?.toString()}</div>
                 </div>
                 <div class="main-content">
@@ -251,7 +251,7 @@ const generateETicket = async (booking, language = 'en') => {
 
 
 const generateSingleETicket = async (booking) => {
-    const qrCodeData = `https://www.gobusly.com/authorize-booking?id=${booking?._id?.toString()}`;
+    const qrCodeData = `https://www.idotours.com.mk/authorize-booking?id=${booking?._id?.toString()}`;
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData);
     console.log({ qrCodeDataUrl });
 
@@ -300,7 +300,7 @@ const generateSingleETicket = async (booking) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>GoBusly E-Ticket</title>
+        <title>IdoTours E-Ticket</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
             
@@ -313,7 +313,7 @@ const generateSingleETicket = async (booking) => {
             
             body {
                 background-color: #ffffff;
-                color: #1a1a1a;
+                color: #1e293b;
                 line-height: 1.5;
             }
             
@@ -321,7 +321,7 @@ const generateSingleETicket = async (booking) => {
                 max-width: 800px;
                 margin: 0 auto;
                 background: white;
-                border: 1px solid #e5e7eb;
+                border: 1px solid #dbeafe;
                 border-radius: 0.5rem;
                 overflow: hidden;
             }
@@ -331,7 +331,7 @@ const generateSingleETicket = async (booking) => {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 1px solid #e5e7eb;
+                border-bottom: 1px solid #dbeafe;
             }
             
             .logo {
@@ -342,13 +342,13 @@ const generateSingleETicket = async (booking) => {
             
             .booking-id {
                 font-size: 0.875rem;
-                color: #6b7280;
+                color: #64748b;
             }
             
             .main-content {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                border-bottom: 1px solid #e5e7eb;
+                border-bottom: 1px solid #dbeafe;
             }
             
             .left-column, .right-column {
@@ -356,7 +356,7 @@ const generateSingleETicket = async (booking) => {
             }
             
             .left-column {
-                border-right: 1px dashed #e5e7eb;
+                border-right: 1px dashed #dbeafe;
             }
             
             .destination-info {
@@ -366,6 +366,7 @@ const generateSingleETicket = async (booking) => {
             .date {
                 font-weight: 500;
                 margin-bottom: 0.5rem;
+                color: #1e3a8a;
             }
             
             .route {
@@ -381,11 +382,12 @@ const generateSingleETicket = async (booking) => {
                 justify-content: space-between;
                 font-weight: 500;
                 height: 100%;
+                color: #2563eb;
             }
             
             .inner-line {
                 height:100%;
-                border-right:2px dashed #ff4545;
+                border-right:2px dashed #2563eb;
             }
 
             .route-line {
@@ -404,7 +406,7 @@ const generateSingleETicket = async (booking) => {
                 top: 1.25rem;
                 bottom: 1.25rem;
                 width: 0.125rem;
-                background-color: #ff4545;
+                background-color: #2563eb;
                 border-radius: 9999px;
                 z-index: 0;
             }
@@ -412,7 +414,7 @@ const generateSingleETicket = async (booking) => {
             .dot {
                 width: 1.25rem;
                 height: 1.25rem;
-                background-color: #ff4545;
+                background-color: #2563eb;
                 border-radius: 9999px;
                 position: relative;
                 z-index: 1;
@@ -433,25 +435,27 @@ const generateSingleETicket = async (booking) => {
             .location-name {
                 font-weight: 500;
                 text-transform: capitalize;
+                color: #1e3a8a;
             }
             
             .location-details {
                 font-size: 0.875rem;
-                color: #6b7280;
+                color: #64748b;
             }
             
             .operator-info {
                 margin-top: 2rem;
-                border: 1px solid #ff4545;
+                border: 1px solid #2563eb;
                 border-radius: 0.5rem;
                 padding: 0.5rem 1rem;
+                background-color: #f0f9ff;
             }
             
             .operator-title {
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #ff4545;
+                color: #2563eb;
                 font-weight: 600;
             }
             
@@ -461,7 +465,7 @@ const generateSingleETicket = async (booking) => {
             
             .operator-text {
                 font-size: 0.875rem;
-                color: #6b7280;
+                color: #64748b;
                 margin-top: 0.25rem;
             }
             
@@ -477,6 +481,7 @@ const generateSingleETicket = async (booking) => {
                 border-radius: 0.5rem;
                 width: 160px;
                 height: 160px;
+                border: 1px solid #dbeafe;
             }
             
             .passenger-info {
@@ -495,6 +500,7 @@ const generateSingleETicket = async (booking) => {
                 height: 1.25rem;
                 margin-top: 0.125rem;
                 flex-shrink: 0;
+                color: #2563eb;
             }
             
             .info-content {
@@ -504,7 +510,7 @@ const generateSingleETicket = async (booking) => {
             
             .info-label {
                 font-size: 0.875rem;
-                color: #6b7280;
+                color: #64748b;
             }
             
             .info-value {
@@ -512,12 +518,14 @@ const generateSingleETicket = async (booking) => {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                color: #1e293b;
             }
             
             .section-title {
                 font-size: 1.125rem;
-                font-weight: 500;
+                font-weight: 600;
                 margin-bottom: 1.5rem;
+                color: #1e3a8a;
             }
             
             .terms {
@@ -527,12 +535,12 @@ const generateSingleETicket = async (booking) => {
             
             .terms-text {
                 font-size: 0.75rem;
-                color: #6b7280;
+                color: #64748b;
                 margin-top: 0.5rem;
             }
             
             .link {
-                color: #ff4545;
+                color: #2563eb;
                 text-decoration: none;
             }
             
@@ -544,14 +552,16 @@ const generateSingleETicket = async (booking) => {
                 text-align: center;
                 padding: 1rem 1.5rem;
                 font-size: 0.875rem;
-                color: #1a1a1a;
+                color: #64748b;
+                border-top: 1px solid #dbeafe;
+                background-color: #f8fafc;
             }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
-            <img src="data:image/png;base64,${logoBase64}" alt="GoBusly" class="logo">
+            <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
                 <div class="booking-id">Booking ID: ${booking?._id?.toString()}</div>
             </div>
             
@@ -636,7 +646,7 @@ const generateSingleETicket = async (booking) => {
                         </svg>
                         <div class="info-content">
                             <div class="info-label">FAQ:</div>
-                            <a href="https://www.gobusly.com/help" target="_blank" class="info-value link">gobusly.com/help</a>
+                            <a href="https://www.IdoTours.com.mk/help" target="_blank" class="info-value link">idotours.com.mk/help</a>
                         </div>
                     </div>
 
@@ -644,7 +654,7 @@ const generateSingleETicket = async (booking) => {
                         <div class="section-title">Terms & Conditions</div>
                         <div class="terms-text">
                             <p style="margin-bottom: 0.5rem;">
-                                By booking with GoBusly, you agree to our 
+                                By booking with IdoTours, you agree to our 
                                 <a href="https://www.gobusly.com/legal/terms-of-service" target="_blank" class="link">Terms of Service</a>
                                 and 
                                 <a href="https://www.gobusly.com/legal/privacy-policy" target="_blank" class="link">Privacy Policy</a>.
@@ -654,7 +664,7 @@ const generateSingleETicket = async (booking) => {
                                 <a href="https://www.gobusly.com/legal/terms-and-conditions-of-carriage" target="_blank" class="link">Terms of Carriage</a>
                                 of the carrier apply to travel.
                             </p>
-                            <p>GoBusly is an equal-opportunity service for all passengers.</p>
+                            <p>IdoTours is an equal-opportunity service for all passengers.</p>
                         </div>
                     </div>
 
@@ -710,7 +720,7 @@ const generateSingleETicket = async (booking) => {
             </div>
             
             <div class="footer">
-                © ${new Date().getFullYear()} GoBusly • Electronic Ticket • No Signature Required
+                © ${new Date().getFullYear()} IdoTours • Electronic Ticket • No Signature Required
             </div>
         </div>
     </body>
@@ -772,11 +782,11 @@ const generatePassengerManifestPDF = async (manifestData) => {
 
     const passengerRows = passengers.map((p, index) => `
         <tr>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${index + 1}</td>
-            <td style="border: 1px solid #000; padding: 8px;">${p.full_name}</td>
-            <td style="border: 1px solid #000; padding: 8px;">${p.phone || 'N/A'}</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${p.age || ''}</td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center;">[ ]</td>
+            <td style="border: 1px solid #dbeafe; padding: 8px; text-align: center;">${index + 1}</td>
+            <td style="border: 1px solid #dbeafe; padding: 8px;">${p.full_name}</td>
+            <td style="border: 1px solid #dbeafe; padding: 8px;">${p.phone || 'N/A'}</td>
+            <td style="border: 1px solid #dbeafe; padding: 8px; text-align: center;">${p.age || ''}</td>
+            <td style="border: 1px solid #dbeafe; padding: 8px; text-align: center;">[ ]</td>
         </tr>
     `).join('');
 
@@ -786,16 +796,19 @@ const generatePassengerManifestPDF = async (manifestData) => {
     <head>
         <meta charset="UTF-8">
         <style>
-            body { font-family: sans-serif; padding: 20px; color: #000; }
-            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+            body { font-family: 'Inter', sans-serif; padding: 20px; color: #1e293b; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #2563eb; padding-bottom: 15px; }
+            .header h2 { color: #1e3a8a; }
             .info-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; justify-content: space-between; }
-            .info-item { font-size: 14px; min-width: 200px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th { background-color: #f2f2f2; border: 1px solid #000; padding: 10px; text-align: left; font-size: 12px; }
-            td { border: 1px solid #000; padding: 8px; font-size: 12px; }
+            .info-item { font-size: 14px; min-width: 200px; color: #1e293b; }
+            .info-item strong { color: #1e3a8a; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid #dbeafe; }
+            th { background-color: #eff6ff; border: 1px solid #dbeafe; padding: 12px 10px; text-align: left; font-size: 12px; color: #1e3a8a; font-weight: 600; }
+            td { border: 1px solid #dbeafe; padding: 10px 8px; font-size: 12px; color: #334155; }
+            tr:nth-child(even) { background-color: #f8fafc; }
             .footer { margin-top: 80px; display: flex; justify-content: space-between; }
-            .signature-box { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; font-size: 12px; }
-            .operator-info { margin-top: 10px; font-size: 10px; color: #666; text-align: center; }
+            .signature-box { border-top: 1px solid #64748b; width: 200px; text-align: center; padding-top: 8px; font-size: 12px; color: #64748b; }
+            .operator-info { margin-top: 15px; font-size: 11px; color: #94a3b8; text-align: center; padding-top: 15px; border-top: 1px solid #f1f5f9; }
         </style>
     </head>
     <body>
@@ -832,7 +845,7 @@ const generatePassengerManifestPDF = async (manifestData) => {
         </div>
 
         <div class="operator-info">
-            Generated by GoBusly Platform on ${moment().format('YYYY-MM-DD HH:mm')}
+            Generated by IdoTours Platform on ${moment().format('YYYY-MM-DD HH:mm')}
         </div>
     </body>
     </html>

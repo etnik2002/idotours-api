@@ -65,16 +65,17 @@ module.exports = {
                     ticket_id: req.body.ticket_id || null,
                 }
             };
-    
+
             let auto_capture = false;
             if (req.query.use_saved_card == 'true' && req.query.customer_id && req.query.customer_id.trim() !== "" && req.query.payment_method_id && req.query.payment_method_id.trim() !== "") {
                 data.customer = req.query.customer_id.trim();
                 data.payment_method = req.query.payment_method_id;
                 auto_capture = true;
             }
-    
+
             let paymentIntent = await stripe.paymentIntents.create(data);
-            
+            console.log({ paymentIntent });
+
             if (auto_capture) {
                 paymentIntent = await stripe.paymentIntents.confirm(
                     paymentIntent.id,
@@ -83,20 +84,20 @@ module.exports = {
                         return_url: 'https://www.gobusly.com',
                     }
                 );
-    
+
                 return res.status(200).json({
                     message: "Payment captured automatically",
                     data: paymentIntent,
                     auto_capture: true
                 });
             }
-    
+
             ok(res, "payment_intent_created", { clientSecret: paymentIntent.client_secret, auto_capture: false });
         } catch (error) {
             server_error(res, error.message, null);
         }
     }
-,
+    ,
 
     createSetupIntent: async (req, res) => {
         try {
@@ -110,7 +111,7 @@ module.exports = {
                 { $push: { stripe_payment_method_ids: req.body.payment_method_id } },
                 { new: true }
             );
-            
+
             const updatedCustomer = await stripe.customers.update(req.query.customer_id, {
                 invoice_settings: {
                     default_payment_method: paymentMethod.id,
