@@ -5,6 +5,8 @@ const apicache = require("apicache");
 const cache = apicache.middleware;
 router.use(requestLimiter);
 
+router.post('/create/:operator_id?', createStation);
+
 router.post('/create', createStation);
 
 router.get("/", getAll);

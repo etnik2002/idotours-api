@@ -59,14 +59,12 @@ if (cluster.isMaster) {
     "search_bus_routes",
     {
       description: "Search available bus routes",
-      // 2. Replace the raw JSON object with z.object()
       inputSchema: z.object({
         from: z.string().describe("Departure station"),
         to: z.string().describe("Arrival station"),
       }),
     },
     async ({ from, to }) => {
-      // 3. Ensure axios is imported (see below)
       const response = await axios.get(
         "https://api-v2.gobusly.com/ticket/search/find-nearest",
         {
@@ -77,7 +75,6 @@ if (cluster.isMaster) {
         }
       );
 
-      // 4. Return text content for best compatibility
       return {
         content: [{
           type: "text",

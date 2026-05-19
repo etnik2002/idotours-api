@@ -5,7 +5,7 @@ module.exports = {
     createStation: async (req, res) => {
         try {
             const { name, city, country, address, location, code } = req.body;
-            const { operator_id } = req.params;
+            const operator_id = req.params.operator_id || req.body.operatorId || req.body.operator_id;
 
             const new_station = new Station({
                 name,
