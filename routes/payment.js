@@ -1,6 +1,6 @@
 require("dotenv").config()
 const { depositAuth } = require("../auth/payment");
-const { createCheckoutSession, createPaymentIntent, refund, cancelRefund, listAllCharges, listAllBalanceTransactions, getChargeByPaymentIntentId, createDeposit, getDeposits, createCustomer, createSetupIntent, retrieveCustomerPaymentMethods, detachUserPaymentMethod } = require("../controllers/payment-controller");
+const { createCheckoutSession, createPaymentIntent, refund, cancelRefund, listAllCharges, listAllBalanceTransactions, getChargeByPaymentIntentId, createDeposit, getDeposits, createCustomer, createSetupIntent, retrieveCustomerPaymentMethods, detachUserPaymentMethod, initiateHalkbankPayment, halkbankCallback, getHalkbankPaymentStatus } = require("../controllers/payment-controller");
 const { ok } = require("../functions/responses");
 const router = require("express").Router();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -14,6 +14,9 @@ router.get("/charges/pid/:payment_intent_id", getChargeByPaymentIntentId)
 router.post("/create-checkout-session", createCheckoutSession);
 
 router.post("/create-payment-intent", createPaymentIntent);
+router.post("/halkbank/initiate", initiateHalkbankPayment);
+router.post("/halkbank/callback", halkbankCallback);
+router.get("/halkbank/status/:order_id", getHalkbankPaymentStatus);
 
 router.post("/create-setup-intent", createSetupIntent);
 

@@ -12,10 +12,101 @@ const { calculateFlexDates } = require("../functions/booking");
 const { sendBookingConfirmationEmail, sendBookingReceiptEmail, sendBookingConfirmationEmailWithAttachment, sendOperatorBookingNotification } = require("../helpers/email");
 const User = require("../models/User");
 const Agency = require("../models/Agency");
+const Affiliate = require("../models/Affiliate");
 const moment = require("moment-timezone");
 const { generateETicket, generateSingleETicket } = require("../helpers/pdf");
 
 const arrayBufferToBuffer = (arrayBuffer) => Buffer.from(new Uint8Array(arrayBuffer));
+
+const parseBirthdate = (value) => {
+  if (!value || typeof value !== "string") return null;
+
+  const trimmed = value.trim();
+  const isoMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  const localMatch = trimmed.match(/^(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})$/);
+  const year = isoMatch ? Number(isoMatch[1]) : Number(localMatch?.[3]);
+  const month = isoMatch ? Number(isoMatch[2]) : Number(localMatch?.[2]);
+  const day = isoMatch ? Number(isoMatch[3]) : Number(localMatch?.[1]);
+
+  if (!year || !month || !day) return null;
+
+  const date = new Date(year, month - 1, day);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
+};
+
+const getAgeOnDate = (birthdate, travelDate) => {
+  const parsed = parseBirthdate(birthdate);
+  if (!parsed) return null;
+
+  const referenceDate = travelDate ? new Date(travelDate) : new Date();
+  let age = referenceDate.getFullYear() - parsed.getFullYear();
+  const hasBirthdayPassed =
+    referenceDate.getMonth() > parsed.getMonth() ||
+    (referenceDate.getMonth() === parsed.getMonth() &&
+      referenceDate.getDate() >= parsed.getDate());
+
+  if (!hasBirthdayPassed) age -= 1;
+  return age;
+};
+
+const getIdValue = (value) => {
+  if (!value) return "";
+  if (value._id) return value._id.toString();
+  return value.toString();
+};
+
+const getSelectedStop = (ticket, departureStation, arrivalStation) => {
+  if (!ticket?.stops?.length) return null;
+
+  const matchedStop = ticket.stops.find((stop) => {
+    const fromMatches =
+      !departureStation || getIdValue(stop.from) === departureStation.toString();
+    const toMatches =
+      !arrivalStation || getIdValue(stop.to) === arrivalStation.toString();
+
+    return fromMatches && toMatches;
+  });
+
+  return matchedStop || ticket.stops[0];
+};
+
+const normalizePricedPassengers = (passengers, stop, travelDate) => {
+  const adultPrice = Number(stop?.price);
+  if (!Number.isFinite(adultPrice)) {
+    throw new Error("Ticket stop price is missing");
+  }
+
+  const rawChildrenPrice = Number(stop?.children_price);
+  const childrenPrice = Number.isFinite(rawChildrenPrice)
+    ? rawChildrenPrice
+    : adultPrice;
+
+  const pricedPassengers = passengers.map((passenger) => {
+    const age = getAgeOnDate(passenger.birthdate, travelDate);
+    const price = age !== null && age < 10 ? childrenPrice : adultPrice;
+
+    return {
+      ...passenger,
+      age: age ?? undefined,
+      price,
+    };
+  });
+
+  const totalPrice = pricedPassengers.reduce(
+    (sum, passenger) => sum + (Number(passenger.price) || 0),
+    0,
+  );
+
+  return { pricedPassengers, totalPrice };
+};
 
 module.exports = {
 
@@ -73,7 +164,7 @@ module.exports = {
         appwrite_user_id: mongoose.Types.ObjectId.isValid(user_id) ? undefined : user_object_id,
         ticket: req.params.ticket_id,
         operator: operator,
-        affiliate: new mongoose.Types.ObjectId(affiliate_acc?._id) || null,
+        affiliate: affiliate_acc?._id ? new mongoose.Types.ObjectId(affiliate_acc._id) : null,
         route: new mongoose.Types.ObjectId(ticket.route_number._id),
         departure_date: req.body.stop?.departure_date || null,
         destinations: {
@@ -97,6 +188,9 @@ module.exports = {
           discount_amount_in_cents: req.body.discount_amount_in_cents,
           discount_codde: req.body.discount_codde,
           payment_intent_id: req.body.payment_intent_id,
+          transaction_id: req.body.halkbank?.transaction_id || req.body.payment_intent_id,
+          payment_processor: req.body.halkbank ? "Halkbank" : "Stripe",
+          halkbank: req.body.halkbank,
           travel_flex: req.body.travel_flex,
           can_cancel_booking_until: can_cancel_until,
           can_edit_booking_until: can_edit_until,
@@ -107,14 +201,14 @@ module.exports = {
         },
       });
 
-      newBooking.save();
+      await newBooking.save();
       console.log({ newBooking });
 
       const language = req.body.gobusly_language || "en";
       sendInvoice(req.body.payment_intent_id, newBooking, language, operator);
 
       ticket.number_of_tickets -= total_passengers.length;
-      ticket.save()
+      await ticket.save()
 
       // if (operator?.notification_permissions?.allow_portal_notifications) {
       //   if (ticket?.number_of_tickets <= operator?.notification_permissions?.not_enough_seats + 1) {
@@ -554,7 +648,6 @@ module.exports = {
       const {
         ticket_id,
         passengers,
-        total_price,
         departure_date,
         departure_station,
         arrival_station,
@@ -574,6 +667,26 @@ module.exports = {
         return error_404(res, "Ticket not found", null);
       }
 
+      if (passengers.length > ticket.number_of_tickets) {
+        return bad_request(res, "Not enough seats left");
+      }
+
+      const selectedStop = getSelectedStop(ticket, departure_station, arrival_station);
+      if (!selectedStop) {
+        return bad_request(res, "Ticket stop not found");
+      }
+
+      let pricedBooking;
+      try {
+        pricedBooking = normalizePricedPassengers(
+          passengers,
+          selectedStop,
+          departure_date || ticket.departure_date,
+        );
+      } catch (error) {
+        return bad_request(res, error.message);
+      }
+
       const newBooking = new Booking({
         ticket: ticket_id,
         operator: operator_id,
@@ -589,9 +702,9 @@ module.exports = {
           from_city: from_city || ticket.destination?.from,
           to_city: to_city || ticket.destination?.to,
         },
-        price: total_price,
+        price: pricedBooking.totalPrice,
         service_fee: 0,
-        passengers: passengers,
+        passengers: pricedBooking.pricedPassengers,
         platform: PlatformTypes.WEB,
         is_paid: is_paid === true || is_paid === 'true' ? 'true' : 'false',
         live_mode: process.env.ENV_TYPE == EnvTypes.PROD,
@@ -616,7 +729,7 @@ module.exports = {
   createAgencyBooking: async (req, res) => {
     try {
       const { agency_id, ticket_id } = req.params;
-      const { passengers, total_price, stop, departure_station, arrival_station, departure_station_label, arrival_station_label, location } = req.body;
+      const { passengers, stop, departure_station, arrival_station, departure_station_label, arrival_station_label, location } = req.body;
 
       if (!passengers || passengers.length < 1) {
         return bad_request(res, "Number of passengers should be at least one");
@@ -635,6 +748,21 @@ module.exports = {
       }
 
       const operator_id = ticket.operator || process.env.HARDCODED_OPERATOR_ID;
+      const selectedStop = getSelectedStop(ticket, departure_station, arrival_station);
+      if (!selectedStop) {
+        return bad_request(res, "Ticket stop not found");
+      }
+
+      let pricedBooking;
+      try {
+        pricedBooking = normalizePricedPassengers(
+          passengers,
+          selectedStop,
+          stop?.departure_date || ticket.departure_date,
+        );
+      } catch (error) {
+        return bad_request(res, error.message);
+      }
 
       const newBooking = new Booking({
         agency: agency_id,
@@ -652,9 +780,9 @@ module.exports = {
           from_city: stop?.from?.city || ticket.destination?.from,
           to_city: stop?.to?.city || ticket.destination?.to,
         },
-        price: total_price,
+        price: pricedBooking.totalPrice,
         service_fee: 0,
-        passengers: passengers,
+        passengers: pricedBooking.pricedPassengers,
         platform: PlatformTypes.WEB,
         is_paid: true,
         live_mode: process.env.ENV_TYPE == EnvTypes.PROD,
@@ -668,10 +796,10 @@ module.exports = {
       await newBooking.save();
 
       // Update agency financial data
-      agency.financial_data.total_sales = (agency.financial_data.total_sales || 0) + total_price;
-      const commission = (total_price * (agency.financial_data.percentage || 10)) / 100;
+      agency.financial_data.total_sales = (agency.financial_data.total_sales || 0) + pricedBooking.totalPrice;
+      const commission = (pricedBooking.totalPrice * (agency.financial_data.percentage || 10)) / 100;
       agency.financial_data.profit = (agency.financial_data.profit || 0) + commission;
-      agency.financial_data.debt = (agency.financial_data.debt || 0) + (total_price - commission);
+      agency.financial_data.debt = (agency.financial_data.debt || 0) + (pricedBooking.totalPrice - commission);
       await agency.save();
 
       ticket.number_of_tickets -= passengers.length;
@@ -710,15 +838,19 @@ module.exports = {
 
 async function sendInvoice(payment_intent_id, newBooking, language, operator) {
   try {
-    const charge = await stripe.charges.list({
-      limit: 1,
-      payment_intent: payment_intent_id,
-    });
-    const receipt_url = charge.data[0].receipt_url;
-
     await sendBookingConfirmationEmailWithAttachment(newBooking, language);
 
-    await sendBookingReceiptEmail(receipt_url, newBooking.passengers[0].email, language);
+    if (newBooking.metadata?.payment_processor !== "Halkbank") {
+      const charge = await stripe.charges.list({
+        limit: 1,
+        payment_intent: payment_intent_id,
+      });
+      const receipt_url = charge.data[0]?.receipt_url;
+
+      if (receipt_url) {
+        await sendBookingReceiptEmail(receipt_url, newBooking.passengers[0].email, language);
+      }
+    }
 
     if (operator) {
       await sendOperatorBookingNotification(newBooking, operator);

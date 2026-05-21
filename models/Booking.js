@@ -126,6 +126,14 @@ const bookingSchema = mongoose.Schema({
         payment_intent_id: {
             type: String,
         },
+        payment_processor: {
+            type: String,
+        },
+        halkbank: {
+            auth_code: String,
+            transaction_id: String,
+            host_ref_num: String,
+        },
         travel_flex: {
             type: String,
             enum: [TravelFlexTypes.PREMIUM, TravelFlexTypes.BASIC, TravelFlexTypes.NO_FLEX],

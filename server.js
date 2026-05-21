@@ -41,13 +41,22 @@ if (cluster.isMaster) {
 
   const autoPayoutsCron = new AutoPayoutsCronjob();
 
-  app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  const corsOptions = {
+    origin(origin, callback) {
+      callback(null, origin || '*');
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'ngrok-skip-browser-warning',
+      'x-requested-with',
+    ],
     credentials: true,
-  }));
+  };
 
-  app.options('*', cors());
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
 
 
   const mcp = new McpServer({
