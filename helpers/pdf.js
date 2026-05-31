@@ -10,6 +10,28 @@ const { generateETicketTranslations, interpolate } = require('./translations/boo
 const logoPath = path.join(__dirname, 'assets', 'cfajdo.png');
 const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
 
+const escapeAttribute = (value = '') => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+const getAgencyLogoHtml = (booking) => {
+    const agency = booking?.agency;
+    if (!agency || typeof agency !== 'object') return '';
+
+    const logoUrl = String(agency?.company_metadata?.logo || '').trim();
+    if (!logoUrl) return '';
+
+    const agencyName = agency?.company_metadata?.name || agency?.name || 'Agency';
+
+    return `
+        <div class="agency-logo-wrap">
+            <img src="${escapeAttribute(logoUrl)}" alt="${escapeAttribute(agencyName)} logo" class="logo agency-logo">
+        </div>
+    `;
+};
+
 const generateETicket = async (booking, language = 'en') => {
     const t = generateETicketTranslations[language] || generateETicketTranslations.en;
 
@@ -17,6 +39,7 @@ const generateETicket = async (booking, language = 'en') => {
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData);
     const formattedDepartureDate = moment.utc(booking?.departure_date).format('dddd, DD MMM YYYY');
     const formattedTime = moment.utc(booking?.departure_date).format('HH:mm');
+    const agencyLogoHtml = getAgencyLogoHtml(booking);
 
     const results = [];
 
@@ -50,7 +73,10 @@ const generateETicket = async (booking, language = 'en') => {
                 body { background-color: #ffffff; color: #1e293b; line-height: 1.5; }
                 .container { max-width: 800px; margin: 0 auto; background: white; border: 1px solid #dbeafe; border-radius: 0.5rem; overflow: hidden; }
                 .header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dbeafe; }
+                .brand-logos { display: flex; align-items: center; gap: 1rem; }
                 .logo { width: 120px; height: 60px; object-fit: contain; }
+                .agency-logo-wrap { padding-left: 1rem; border-left: 1px solid #dbeafe; }
+                .agency-logo { max-width: 120px; }
                 .booking-id { font-size: 0.875rem; color: #64748b; }
                 .main-content { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #dbeafe; }
                 .left-column, .right-column { padding: 1.5rem; }
@@ -90,7 +116,10 @@ const generateETicket = async (booking, language = 'en') => {
         <body>
             <div class="container">
                 <div class="header">
-                    <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
+                    <div class="brand-logos">
+                        <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
+                        ${agencyLogoHtml}
+                    </div>
                     <div class="booking-id">${t.bookingId} ${booking?._id?.toString()}</div>
                 </div>
                 <div class="main-content">
@@ -257,6 +286,7 @@ const generateSingleETicket = async (booking) => {
 
     const formattedDepartureDate = moment.utc(booking?.departure_date).format('dddd, DD MMM YYYY');
     const formattedTime = moment.utc(booking?.departure_date).format('HH:mm');
+    const agencyLogoHtml = getAgencyLogoHtml(booking);
 
     const passengersHtml = booking?.passengers?.map((passenger, index) => `
         <div class="info-item">
@@ -333,11 +363,26 @@ const generateSingleETicket = async (booking) => {
                 align-items: center;
                 border-bottom: 1px solid #dbeafe;
             }
+
+            .brand-logos {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
             
             .logo {
                 width: 120px;
                 height: 60px;
                 object-fit: contain;
+            }
+
+            .agency-logo-wrap {
+                padding-left: 1rem;
+                border-left: 1px solid #dbeafe;
+            }
+
+            .agency-logo {
+                max-width: 120px;
             }
             
             .booking-id {
@@ -561,7 +606,10 @@ const generateSingleETicket = async (booking) => {
     <body>
         <div class="container">
             <div class="header">
-            <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
+                <div class="brand-logos">
+                    <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
+                    ${agencyLogoHtml}
+                </div>
                 <div class="booking-id">Booking ID: ${booking?._id?.toString()}</div>
             </div>
             

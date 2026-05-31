@@ -108,6 +108,21 @@ const normalizePricedPassengers = (passengers, stop, travelDate) => {
   return { pricedPassengers, totalPrice };
 };
 
+const getAgencyPercentage = (agency) => {
+  const percentage = Number(agency?.financial_data?.percentage);
+  if (!Number.isFinite(percentage)) return 0;
+  return Math.min(Math.max(percentage, 0), 100);
+};
+
+const getAgencyDebtSplit = (total, agency) => {
+  const percentage = getAgencyPercentage(agency);
+  const commission = (total * percentage) / 100;
+  return {
+    commission,
+    operatorDebt: total - commission,
+  };
+};
+
 module.exports = {
 
   create: async (req, res) => {
@@ -473,7 +488,10 @@ module.exports = {
 
   downloadEBooking: async (req, res) => {
     try {
-      const booking = await Booking.findById(req.params.booking_id).populate({ path: "operator", select: "name" });
+      const booking = await Booking.findById(req.params.booking_id).populate([
+        { path: "operator", select: "name" },
+        { path: "agency", select: "name company_metadata" },
+      ]);
       if (!booking) {
         return bad_request(res, "Booking not found", null);
       }
@@ -495,7 +513,10 @@ module.exports = {
 
   downloadEBookingMobileAPI: async (req, res) => {
     try {
-      const booking = await Booking.findById(req.params.booking_id).populate({ path: "operator", select: "name" });
+      const booking = await Booking.findById(req.params.booking_id).populate([
+        { path: "operator", select: "name" },
+        { path: "agency", select: "name company_metadata" },
+      ]);
       console.log({ metadje: booking.metadata });
       if (booking.metadata.download_url) {
         return res.status(200).json({ data: booking.metadata.download_url, message: "Mobile eticket file url" });
@@ -729,7 +750,7 @@ module.exports = {
   createAgencyBooking: async (req, res) => {
     try {
       const { agency_id, ticket_id } = req.params;
-      const { passengers, stop, departure_station, arrival_station, departure_station_label, arrival_station_label, location } = req.body;
+      const { passengers, stop, departure_station, arrival_station, departure_station_label, arrival_station_label, location, is_paid } = req.body;
 
       if (!passengers || passengers.length < 1) {
         return bad_request(res, "Number of passengers should be at least one");
@@ -784,7 +805,7 @@ module.exports = {
         service_fee: 0,
         passengers: pricedBooking.pricedPassengers,
         platform: PlatformTypes.WEB,
-        is_paid: true,
+        is_paid: is_paid === false || is_paid === 'false' ? 'false' : 'true',
         live_mode: process.env.ENV_TYPE == EnvTypes.PROD,
         location: location || null,
         metadata: {
@@ -794,13 +815,20 @@ module.exports = {
       });
 
       await newBooking.save();
+      await newBooking.populate([
+        { path: "operator", select: "name" },
+        { path: "agency", select: "name company_metadata" },
+      ]);
 
-      // Update agency financial data
-      agency.financial_data.total_sales = (agency.financial_data.total_sales || 0) + pricedBooking.totalPrice;
-      const commission = (pricedBooking.totalPrice * (agency.financial_data.percentage || 10)) / 100;
-      agency.financial_data.profit = (agency.financial_data.profit || 0) + commission;
-      agency.financial_data.debt = (agency.financial_data.debt || 0) + (pricedBooking.totalPrice - commission);
-      await agency.save();
+      if (newBooking.is_paid === true || newBooking.is_paid === 'true') {
+        const { commission, operatorDebt } = getAgencyDebtSplit(pricedBooking.totalPrice, agency);
+
+        agency.financial_data = agency.financial_data || {};
+        agency.financial_data.total_sales = (agency.financial_data.total_sales || 0) + pricedBooking.totalPrice;
+        agency.financial_data.profit = (agency.financial_data.profit || 0) + commission;
+        agency.financial_data.debt = (agency.financial_data.debt || 0) + operatorDebt;
+        await agency.save();
+      }
 
       ticket.number_of_tickets -= passengers.length;
       await ticket.save();
@@ -819,7 +847,10 @@ module.exports = {
     try {
       console.log("|zjarrrr");
 
-      const booking = await Booking.findById(req.params.booking_id).populate('operator');
+      const booking = await Booking.findById(req.params.booking_id).populate([
+        { path: "operator" },
+        { path: "agency", select: "name company_metadata" },
+      ]);
 
       await sendBookingConfirmationEmailWithAttachment(booking, req.body.language);
 

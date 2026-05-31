@@ -8,6 +8,64 @@ const { users } = require("../appwrite/appwrite.config");
 const { sendOtp } = require("../helpers/email");
 const moment = require("moment-timezone");
 
+const getAgencyPercentage = (agency) => {
+  const percentage = Number(agency?.financial_data?.percentage);
+  if (!Number.isFinite(percentage)) return 0;
+  return Math.min(Math.max(percentage, 0), 100);
+};
+
+const calculateAgencyFinancialData = async (agency) => {
+  if (!agency?._id) return agency;
+
+  const percentage = getAgencyPercentage(agency);
+  const [paidTotals = {}, unpaidTotals = {}] = await Promise.all([
+    Booking.aggregate([
+      {
+        $match: {
+          agency: agency._id,
+          is_paid: { $in: [true, "true"] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total_sales: { $sum: "$price" },
+        },
+      },
+    ]).then(([result]) => result || {}),
+    Booking.aggregate([
+      {
+        $match: {
+          agency: agency._id,
+          is_paid: { $in: [true, "true"] },
+          is_agency_debt_paid: { $ne: true },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total_sales: { $sum: "$price" },
+        },
+      },
+    ]).then(([result]) => result || {}),
+  ]);
+
+  const totalSales = paidTotals.total_sales || 0;
+  const unpaidSales = unpaidTotals.total_sales || 0;
+  const profit = (totalSales * percentage) / 100;
+  const debt = unpaidSales - (unpaidSales * percentage) / 100;
+
+  agency.financial_data = {
+    ...(agency.financial_data?.toObject?.() || agency.financial_data || {}),
+    total_sales: totalSales,
+    profit,
+    debt,
+  };
+
+  await agency.save();
+  return agency;
+};
+
 module.exports = {
   createAgency: async (req, res) => {
     try {
@@ -74,6 +132,7 @@ module.exports = {
         return res.status(401).json({ data: null, message: "Invalid  Password" });
       }
 
+      await calculateAgencyFinancialData(agency);
       const token = agency.generateAuthToken(agency);
 
       return res.status(200).json({ data: token, message: "logged in successfully" });
@@ -89,6 +148,8 @@ module.exports = {
       if (!agency) {
         return error_404(res, "Agency not found", null);
       }
+
+      await calculateAgencyFinancialData(agency);
 
       if (agency.password) {
         removePassword(agency);
@@ -117,6 +178,8 @@ module.exports = {
       if (!agencies || agencies.length === 0) {
         return error_404(res, "No agencies found", null);
       }
+
+      await Promise.all(agencies.map(calculateAgencyFinancialData));
 
       agencies.forEach(agency => {
         if (agency.password) {
@@ -262,7 +325,7 @@ module.exports = {
         return error_404(res, "Agency not found", null);
       }
 
-      const percentage = agency.financial_data?.percentage || 0;
+      const percentage = getAgencyPercentage(agency);
       const startOfMonth = moment.utc().year(year).month(month - 1).startOf('month').toDate();
       const endOfMonth = moment.utc().year(year).month(month - 1).endOf('month').toDate();
 
@@ -309,7 +372,7 @@ module.exports = {
         return error_404(res, "Agency not found", null);
       }
 
-      const percentage = agency.financial_data?.percentage || 0;
+      const percentage = getAgencyPercentage(agency);
 
       const report = await Booking.aggregate([
         {

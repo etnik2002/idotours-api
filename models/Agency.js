@@ -79,6 +79,9 @@ const agencySchema = mongoose.Schema({
         country: {
             type: String,
         },
+        logo: {
+            type: String,
+        },
 
     },
     otp: {
