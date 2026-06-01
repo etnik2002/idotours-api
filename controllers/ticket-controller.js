@@ -7,6 +7,56 @@ const Station = require("../models/Station");
 const moment = require("moment-timezone");
 const { default: mongoose } = require("mongoose");
 
+const parseDurationToMilliseconds = (duration) => {
+  const [hours = "0", minutes = "0"] = String(duration || "00:00").split(":");
+  return (parseInt(hours, 10) || 0) * 60 * 60 * 1000 + (parseInt(minutes, 10) || 0) * 60 * 1000;
+};
+
+const buildStopForTicketDate = (ticket, stopInput, existingStop = {}) => {
+  const existing = typeof existingStop.toObject === "function" ? existingStop.toObject() : existingStop;
+  const time = stopInput.time ?? existing.time ?? ticket.time ?? "00:00";
+  const maxBuyingTime = stopInput.max_buying_time ?? existing.max_buying_time ?? "00:00";
+  const price = stopInput.price ?? stopInput.other_prices?.our_price ?? existing.price ?? 0;
+  const childrenPrice =
+    stopInput.children_price ??
+    stopInput.other_prices?.our_children_price ??
+    existing.children_price ??
+    0;
+  const returnPrice =
+    stopInput.return_price ??
+    stopInput.other_prices?.return_price ??
+    existing.other_prices?.return_price ??
+    0;
+  const routeDayOfWeek = new Date(ticket.departure_date).getUTCDay() + 1;
+  const [hour = "0", minute = "0"] = String(time).split(":");
+  const departureDate = new Date(ticket.departure_date);
+
+  departureDate.setUTCHours(parseInt(hour, 10) || 0, parseInt(minute, 10) || 0, 0, 0);
+  if (stopInput.isTomorrow ?? existing.isTomorrow) {
+    departureDate.setUTCDate(departureDate.getUTCDate() + 1);
+  }
+
+  return {
+    ...existing,
+    from: stopInput.from ?? existing.from,
+    to: stopInput.to ?? existing.to,
+    time,
+    departure_date: departureDate.toISOString(),
+    price,
+    children_price: childrenPrice,
+    max_buying_time: maxBuyingTime,
+    arrival_time: new Date(departureDate.getTime() + parseDurationToMilliseconds(maxBuyingTime)),
+    days_of_week: existing.days_of_week ?? [routeDayOfWeek],
+    other_prices: {
+      ...existing.other_prices,
+      ...stopInput.other_prices,
+      our_price: stopInput.other_prices?.our_price ?? price,
+      our_children_price: stopInput.other_prices?.our_children_price ?? childrenPrice,
+      return_price: returnPrice
+    }
+  };
+};
+
 module.exports = {
   createTickets: async (req, res) => {
     try {
@@ -1204,12 +1254,30 @@ module.exports = {
       }
 
       if (updateData.stops && Array.isArray(updateData.stops)) {
-        const ticketIds = futureTickets.map(ticket => ticket._id);
+        if (updateData.replace_stops) {
+          for (const ticket of futureTickets) {
+            const updatedStops = updateData.stops.map((stopInput, index) =>
+              buildStopForTicketDate(ticket, stopInput, ticket.stops[index])
+            );
+            const ticketUpdateFields = { ...updateFields };
 
-        for (const ticket of futureTickets) {
-          const updatedStops = ticket.stops.map((stop, index) => {
-            if (updateData.stops[index]) {
-              const updatedStop = { ...stop.toObject() };
+            if (updateData.time) {
+              const [hour = "0", minute = "0"] = String(updateData.time).split(":");
+              const departureDate = new Date(ticket.departure_date);
+              departureDate.setUTCHours(parseInt(hour, 10) || 0, parseInt(minute, 10) || 0, 0, 0);
+              ticketUpdateFields.departure_date = departureDate.toISOString();
+            }
+
+            await Ticket.findByIdAndUpdate(ticket._id, {
+              ...ticketUpdateFields,
+              stops: updatedStops
+            });
+          }
+        } else {
+          for (const ticket of futureTickets) {
+            const updatedStops = ticket.stops.map((stop, index) => {
+              if (updateData.stops[index]) {
+                const updatedStop = { ...stop.toObject() };
 
               if (updateData.stops[index].price !== undefined) {
                 updatedStop.price = updateData.stops[index].price;
@@ -1263,10 +1331,11 @@ module.exports = {
             return stop;
           });
 
-          await Ticket.findByIdAndUpdate(ticket._id, {
-            ...updateFields,
-            stops: updatedStops
-          });
+            await Ticket.findByIdAndUpdate(ticket._id, {
+              ...updateFields,
+              stops: updatedStops
+            });
+          }
         }
       } else {
         await Ticket.updateMany(

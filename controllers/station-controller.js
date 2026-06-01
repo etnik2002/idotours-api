@@ -31,17 +31,13 @@ module.exports = {
     getByOperator: async (req, res) => {
         try {
             let { select, page = 1, limit = 10 } = req.query;
-            const { operator_id } = req.params;
 
             page = parseInt(page);
             limit = parseInt(limit);
 
             const skip = (page - 1) * limit;
 
-            const stations = await Station.find({ operator: operator_id })
-                .select(select)
-                .skip(skip)
-                .limit(limit);
+            const stations = await Station.find({  })
 
             if (!stations || stations.length === 0) {
                 return ok(res, "No stations found", []);

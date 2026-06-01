@@ -202,8 +202,60 @@ module.exports = {
             let searchDate = date ? moment.utc(date).startOf('day').toDate() : moment.utc().startOf('day').toDate();
             let endOfSearchDate = moment.utc(searchDate).endOf('day').toDate();
 
+            const tickets = await Ticket.find({
+                operator: operator_id,
+                departure_date: {
+                    $gte: searchDate,
+                    $lte: endOfSearchDate
+                }
+            })
+                .populate('route_number')
+                .populate('stops.from')
+                .sort({ departure_date: 1 });
+
+            const reports = {};
+            const ticketIds = tickets.map(ticket => ticket._id);
+            const ticketRouteMap = {};
+
+            tickets.forEach(ticket => {
+                const route = ticket.route_number;
+                const routeId = route?._id?.toString() || ticket.route_number?.toString() || ticket._id.toString();
+                const firstStop = ticket.stops?.[0];
+                const startStation = firstStop?.from?.name || firstStop?.from?.city || 'N/A';
+
+                ticketRouteMap[ticket._id.toString()] = routeId;
+
+                if (!reports[routeId]) {
+                    reports[routeId] = {
+                        ticket_id: routeId,
+                        ticket_ids: [],
+                        route_code: route?.code || 'N/A',
+                        route: `${route?.destination?.from || ticket.destination?.from || 'N/A'} → ${route?.destination?.to || ticket.destination?.to || 'N/A'}`,
+                        departure_time: ticket.time || 'N/A',
+                        departure_times: [],
+                        departure_date: moment(searchDate).format('YYYY-MM-DD'),
+                        starting_station: startStation,
+                        starting_stations: [],
+                        passengers: []
+                    };
+                }
+
+                reports[routeId].ticket_ids.push(ticket._id.toString());
+
+                if (ticket.time && !reports[routeId].departure_times.includes(ticket.time)) {
+                    reports[routeId].departure_times.push(ticket.time);
+                    reports[routeId].departure_time = reports[routeId].departure_times.join(', ');
+                }
+
+                if (startStation && !reports[routeId].starting_stations.includes(startStation)) {
+                    reports[routeId].starting_stations.push(startStation);
+                    reports[routeId].starting_station = reports[routeId].starting_stations.join(', ');
+                }
+            });
+
             const bookings = await Booking.find({
                 operator: operator_id,
+                ticket: { $in: ticketIds },
                 departure_date: {
                     $gte: searchDate,
                     $lte: endOfSearchDate
@@ -215,24 +267,27 @@ module.exports = {
                 .populate('destinations.departure_station')
                 .populate('destinations.arrival_station');
 
-            const reports = {};
-
             bookings.forEach(booking => {
                 const ticketId = booking.ticket?._id?.toString() || 'unknown';
-                if (!reports[ticketId]) {
-                    reports[ticketId] = {
-                        ticket_id: ticketId,
+                const routeId = ticketRouteMap[ticketId] || booking.route?._id?.toString() || ticketId;
+
+                if (!reports[routeId]) {
+                    reports[routeId] = {
+                        ticket_id: routeId,
+                        ticket_ids: ticketId !== 'unknown' ? [ticketId] : [],
                         route_code: booking.route?.code || 'N/A',
                         route: `${booking.labels?.from_city || 'N/A'} → ${booking.labels?.to_city || 'N/A'}`,
                         departure_time: booking.ticket?.time || 'N/A',
                         departure_date: moment(booking.departure_date).format('YYYY-MM-DD'),
                         starting_station: booking.destinations?.departure_station?.name || 'N/A',
+                        departure_times: booking.ticket?.time ? [booking.ticket.time] : [],
+                        starting_stations: booking.destinations?.departure_station?.name ? [booking.destinations.departure_station.name] : [],
                         passengers: []
                     };
                 }
 
                 booking.passengers.forEach(p => {
-                    reports[ticketId].passengers.push({
+                    reports[routeId].passengers.push({
                         full_name: p.full_name,
                         phone: p.phone,
                         email: p.email,
@@ -243,7 +298,13 @@ module.exports = {
                 });
             });
 
-            const result = Object.values(reports);
+            const result = Object.values(reports).sort((a, b) => {
+                const timeA = a.departure_time || "";
+                const timeB = b.departure_time || "";
+                const timeSort = timeA.localeCompare(timeB);
+                if (timeSort !== 0) return timeSort;
+                return (a.route_code || "").localeCompare(b.route_code || "");
+            });
             return ok(res, "Passenger manifest generated", result);
         } catch (error) {
             console.error(error);

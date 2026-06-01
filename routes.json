@@ -1,0 +1,2365 @@
+{
+    "message": "Routes data",
+    "data": [
+        {
+            "contact": {
+                "phone": "+38349858018",
+                "email": "kabashiitours@gmail.com"
+            },
+            "destination": {
+                "from": "prishtina",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "674865fbaf5d19283bb5c24e",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 0,
+                "size": "80x50x50"
+            },
+            "_id": "6749efedb822a81d5eb11098",
+            "code": "pr-tir",
+            "operator": {
+                "_id": "6749eee73a71043495f38578",
+                "name": "Kabashi Tours"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2024-11-29T16:46:37.421Z",
+            "updatedAt": "2024-11-29T16:46:37.421Z",
+            "__v": 0,
+            "stop_sequence": [
+                "674865fbaf5d19283bb5c24e",
+                "67486696af5d19283bb5c250",
+                "67486704af5d19283bb5c252"
+            ]
+        },
+        {
+            "contact": {
+                "phone": "+38349858018",
+                "email": "kabashiitours@gmail.com"
+            },
+            "destination": {
+                "from": "tirana",
+                "to": "prishtina"
+            },
+            "stations": {
+                "from": "67486704af5d19283bb5c252",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 0,
+                "size": "80x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "6749f0e2da8c289954e9f4f3",
+            "code": "pr-tir-kabashi-nat",
+            "operator": {
+                "_id": "6749eee73a71043495f38578",
+                "name": "Kabashi Tours"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2024-11-29T16:50:43.013Z",
+            "updatedAt": "2024-11-29T16:50:43.013Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38975209209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "durres"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5f53f58ac1bee83221d4e"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 5,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "67b990e54ea83e8081245554",
+            "code": "HAKBUS-nmk/al/nat",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T08:55:01.641Z",
+            "updatedAt": "2025-02-22T08:55:01.641Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38975209209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "durres"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5f53f58ac1bee83221d4e"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 5,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "67b9912b4ea83e808124555c",
+            "code": "HAKBUS-nmk/al/dit",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T08:56:11.188Z",
+            "updatedAt": "2025-02-22T08:56:11.188Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+355695506173",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "durres",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5f53f58ac1bee83221d4e",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 5,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "67b996774ea83e808124e94c",
+            "code": "HAKBUS-alb/nmk/dit",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T09:18:47.212Z",
+            "updatedAt": "2025-02-22T09:18:47.212Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+355695506173",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "durres",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5f53f58ac1bee83221d4e",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 5,
+                "size": ""
+            },
+            "stop_sequence": [],
+            "_id": "67b996a14ea83e808124e94e",
+            "code": "HAKBUS-alb/nmk/nat",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T09:19:29.707Z",
+            "updatedAt": "2025-02-22T09:19:29.707Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38975209209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "bitola",
+                "to": "hamburg"
+            },
+            "stations": {
+                "from": "67b5eac858ac1bee83221cb5",
+                "to": "67b5eaff58ac1bee83221cb7"
+            },
+            "luggages": {
+                "free": 4,
+                "price_for_extra": 20,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "67b999614ea83e8081257d39",
+            "code": "HAKBUS-nmk/hamb",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T09:31:13.868Z",
+            "updatedAt": "2025-02-22T09:31:13.868Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+4917635383650",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "hamburg",
+                "to": "bitola"
+            },
+            "stations": {
+                "from": "67b5eaff58ac1bee83221cb7",
+                "to": "67b5eac858ac1bee83221cb5"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 20,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "67b99a88576cc5b4388504cc",
+            "code": "HAKBUS-hamb/nmk",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T09:36:08.513Z",
+            "updatedAt": "2025-02-22T09:36:08.513Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38975209209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "bitola",
+                "to": "sasa"
+            },
+            "stations": {
+                "from": "67b5eac858ac1bee83221cb5",
+                "to": "67b5f07b58ac1bee83221d03"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 5,
+                "size": ""
+            },
+            "stop_sequence": [],
+            "_id": "67b9fd2bc02abc9200a1a5e2",
+            "code": "HAKBUS-bit/sasa",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T16:36:59.517Z",
+            "updatedAt": "2025-02-22T16:36:59.517Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38975209209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "bitola",
+                "to": "dortmund"
+            },
+            "stations": {
+                "from": "67b5eac858ac1bee83221cb5",
+                "to": "67b5ec3058ac1bee83221cc5"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 20,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "67ba1b336e88117206a528bd",
+            "code": "HAKBUS-bit/dort",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T18:45:07.623Z",
+            "updatedAt": "2025-02-22T18:45:07.623Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+491623011784",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "dortmund",
+                "to": "bitola"
+            },
+            "stations": {
+                "from": "67b5ec3058ac1bee83221cc5",
+                "to": "67b5eac858ac1bee83221cb5"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 20,
+                "size": ""
+            },
+            "stop_sequence": [],
+            "_id": "67ba1b606e88117206a528c1",
+            "code": "HAKBUS-dort/bit",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-22T18:45:52.220Z",
+            "updatedAt": "2025-02-22T18:45:52.220Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+393294469776",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "sasa",
+                "to": "bitola"
+            },
+            "stations": {
+                "from": "67b5f07b58ac1bee83221d03",
+                "to": "67b5eac858ac1bee83221cb5"
+            },
+            "luggages": {
+                "free": 3,
+                "price_for_extra": 20,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "67baec7cc02abc9200a1a7d0",
+            "code": "HAKBUS-sasa/bit",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-02-23T09:38:04.609Z",
+            "updatedAt": "2025-02-23T09:38:04.609Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 75 209 209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "bitola",
+                "to": "roma"
+            },
+            "stations": {
+                "from": "67b5eac858ac1bee83221cb5",
+                "to": "67b5f23358ac1bee83221d1f"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "683f3531dbdfc15bf0e4cb0b",
+            "code": "HAKBUS-bit/roma",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-06-03T17:47:29.341Z",
+            "updatedAt": "2025-06-03T17:47:29.341Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38975209209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "roma",
+                "to": "bitola"
+            },
+            "stations": {
+                "from": "67b5f23358ac1bee83221d1f",
+                "to": "67b5eac858ac1bee83221cb5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": -3,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "68409d8edbdfc15bf0e57f59",
+            "code": "HAKBUS/roma-bit",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-06-04T19:25:02.914Z",
+            "updatedAt": "2025-06-04T19:25:02.914Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 75 209 209",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "dortmund",
+                "to": "durres"
+            },
+            "stations": {
+                "from": "67b5ec3058ac1bee83221cc5",
+                "to": "67b5f53f58ac1bee83221d4e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 1,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "6840a4a8dbdfc15bf0e5aede",
+            "code": "HAKBUS-dortmund/durres",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-06-04T19:55:20.831Z",
+            "updatedAt": "2025-06-04T19:55:20.831Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+355695506173",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "durres",
+                "to": "dortmund"
+            },
+            "stations": {
+                "from": "67b5f53f58ac1bee83221d4e",
+                "to": "67b5ec3058ac1bee83221cc5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 1,
+                "size": "50x50x50"
+            },
+            "stop_sequence": [],
+            "_id": "6840a6ccdbdfc15bf0e5b3d1",
+            "code": "HAKBUS-durres/dortmund",
+            "operator": {
+                "_id": "67b5ca5358ac1bee83221bcd",
+                "name": "HAK BUS"
+            },
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-06-04T20:04:28.929Z",
+            "updatedAt": "2025-06-04T20:04:28.929Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38970250259",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "Tirana",
+                "to": "Koper"
+            },
+            "stations": {
+                "from": "67486704af5d19283bb5c252",
+                "to": "68ab79da17505004d3893c83"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "68ab7c6017505004d3893d34",
+            "code": "HISAR-tr-kop",
+            "operator": {
+                "_id": "68ab779e9e65b380e3f16bbd",
+                "name": "Hisar Turizam"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-08-24T20:56:00.798Z",
+            "updatedAt": "2025-08-24T20:56:00.798Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 70 250 259",
+                "email": "hakkomerc@gmail.com"
+            },
+            "destination": {
+                "from": "Koper",
+                "to": "Tirana"
+            },
+            "stations": {
+                "from": "68ab79da17505004d3893c83",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "68ac638261f6c37285b8a67c",
+            "code": "HISAR-kop-tr",
+            "operator": {
+                "_id": "68ab779e9e65b380e3f16bbd",
+                "name": "Hisar Turizam"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-08-25T13:22:10.633Z",
+            "updatedAt": "2025-08-25T13:22:10.633Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38972516511",
+                "email": "hafet-tours@hotmail.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "split"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "68e9708c7c816a4c770d9e56"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "68e9712a7c816a4c770d9e61",
+            "code": "hafet-skopje-split",
+            "operator": {
+                "_id": "68cf029cae099c7e7d03a9df",
+                "name": "Hafet Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-10-10T20:48:42.586Z",
+            "updatedAt": "2025-10-10T20:48:42.586Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+385996587405",
+                "email": "hafet-tours@hotmail.com"
+            },
+            "destination": {
+                "from": "split",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "68e9708c7c816a4c770d9e56",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "68e973dd7c816a4c770dc5ad",
+            "code": "hafet-split-skopje",
+            "operator": {
+                "_id": "68cf029cae099c7e7d03a9df",
+                "name": "Hafet Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-10-10T21:00:13.991Z",
+            "updatedAt": "2025-10-10T21:00:13.991Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38970507335",
+                "email": "hafet-tours@hotmail.com"
+            },
+            "destination": {
+                "from": "gostivar",
+                "to": "novigrad"
+            },
+            "stations": {
+                "from": "67b5e90058ac1bee83221c9f",
+                "to": "68e979297c816a4c770e1ba7"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "68e9799e7c816a4c770e1bb1",
+            "code": "hafet-gostivar-novigrad",
+            "operator": {
+                "_id": "68cf029cae099c7e7d03a9df",
+                "name": "Hafet Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-10-10T21:24:46.473Z",
+            "updatedAt": "2025-10-10T21:24:46.473Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38598614653",
+                "email": "hafet-tours@hotmail.com"
+            },
+            "destination": {
+                "from": "novigrad",
+                "to": "gostivar"
+            },
+            "stations": {
+                "from": "68e979297c816a4c770e1ba7",
+                "to": "67b5e90058ac1bee83221c9f"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "68e979c87c816a4c770e1bb4",
+            "code": "hafet-novigrad-gostivar",
+            "operator": {
+                "_id": "68cf029cae099c7e7d03a9df",
+                "name": "Hafet Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-10-10T21:25:28.858Z",
+            "updatedAt": "2025-10-10T21:25:28.858Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "etnikz2002@gmail.com"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "69123841b2a89b4bde88e260",
+                "to": "67b5ec0d58ac1bee83221cc3"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 1,
+                "size": "50x50x50"
+            },
+            "_id": "691b916078cbce96188fed20",
+            "code": "test",
+            "operator": {
+                "_id": "675f189fb5366065e9715f0b",
+                "name": "TOSA Reisebüro"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T21:19:28.614Z",
+            "updatedAt": "2025-11-17T21:19:28.614Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 42 217 344",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "gostivar",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5e90058ac1bee83221c9f",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "691ba28a2a1afcf7f5ff229a",
+            "code": "EUROTURIST_GV/gostivar-skopje-moday-friday",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T22:32:42.471Z",
+            "updatedAt": "2025-11-17T22:32:42.471Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 42 217 344",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "gostivar",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5e90058ac1bee83221c9f",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": ""
+            },
+            "_id": "691ba2dc2a1afcf7f5ff22a9",
+            "code": "EUROTURIST_GV/gostivar-skopje-saturday",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T22:34:04.591Z",
+            "updatedAt": "2025-11-17T22:34:04.591Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 42 217 344",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "gostivar"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5e90058ac1bee83221c9f"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": ""
+            },
+            "_id": "691ba31a2a1afcf7f5ff22b3",
+            "code": "EUROTURIST_GV/skopje-gostivar-moday-friday",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T22:35:06.190Z",
+            "updatedAt": "2025-11-17T22:35:06.190Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 42 217 344",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "gostivar"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5e90058ac1bee83221c9f"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": ""
+            },
+            "_id": "691ba3342a1afcf7f5ff22b8",
+            "code": "EUROTURIST_GV/skopje-gostivar-saturday",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T22:35:32.658Z",
+            "updatedAt": "2025-11-17T22:35:32.658Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 42 217 344",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "gostivar"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5e90058ac1bee83221c9f"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": ""
+            },
+            "_id": "691ba34e2a1afcf7f5ff22bc",
+            "code": "EUROTURIST_GV/skopje-gostivar-sunday",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T22:35:58.088Z",
+            "updatedAt": "2025-11-17T22:35:58.088Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 42 217 344",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "gostivar",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5e90058ac1bee83221c9f",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "691ba6e2465f734c6ce035aa",
+            "code": "EUROTURIST_GV/gostivar-skopje-sunday",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T22:51:14.663Z",
+            "updatedAt": "2025-11-17T22:51:14.663Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "kumanovo"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5e96658ac1bee83221ca7"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691baf22465f734c6ce03aef",
+            "code": "RULE_TURS/skopje-kumanovo-monday-friday",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:26:26.133Z",
+            "updatedAt": "2025-11-17T23:36:52.317Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527",
+                "email": "ruleturs@yahoo.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "kumanovo"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5e96658ac1bee83221ca7"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691bb1ab465f734c6ce0629f",
+            "code": "RULE_TURS/skopje-kumanovo-weekend",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:37:15.007Z",
+            "updatedAt": "2025-11-17T23:47:50.454Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527",
+                "email": "ruleturs@yahoo.com"
+            },
+            "destination": {
+                "from": "kumanovo",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5e96658ac1bee83221ca7",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691bb373465f734c6ce0b833",
+            "code": "RULE_TURS/kumanovo-skopje-monday-friday",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:44:51.374Z",
+            "updatedAt": "2025-11-17T23:47:51.006Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527",
+                "email": "ruleturs@yahoo.com"
+            },
+            "destination": {
+                "from": "kumanovo",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5e96658ac1bee83221ca7",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": ""
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691bb38b465f734c6ce0b838",
+            "code": "RULE_TURS/kumanovo-skopje-weekend",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:45:15.180Z",
+            "updatedAt": "2025-11-17T23:47:51.429Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527",
+                "email": "ruleturs@yahoo.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "tetovo"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5e92f58ac1bee83221ca3"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691bb444465f734c6ce100ba",
+            "code": "RULE_TURS/skopje-tetovo-monday-friday",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:48:20.094Z",
+            "updatedAt": "2025-11-17T23:48:54.197Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527",
+                "email": "ruleturs@yahoo.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "tetovo"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67b5e92f58ac1bee83221ca3"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": ""
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691bb463465f734c6ce100bf",
+            "code": "RULE_TURS/skopje-tetovo-weekend",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:48:51.787Z",
+            "updatedAt": "2025-11-17T23:48:53.741Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527ac",
+                "email": "ruleturs@yahoo.com"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691bb50f465f734c6ce12e68",
+            "code": "RULE_TURS/tetovo-skopje-monday-friday",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:51:43.379Z",
+            "updatedAt": "2025-11-17T23:54:02.243Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 224 02527",
+                "email": "ruleturs@yahoo.com"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": ""
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691bb525465f734c6ce12e6d",
+            "code": "RULE_TURS/tetovo-skopje-weekend",
+            "operator": {
+                "_id": "691baec1465f734c6ce03ae4",
+                "name": "Rule Turs"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-17T23:52:05.133Z",
+            "updatedAt": "2025-11-17T23:54:01.858Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "business@gobusly.com"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "prishtina"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691c57aa28aee335cec316b2",
+            "code": "ERA_TOURS/tetovo-prishtina",
+            "operator": {
+                "_id": "691c56ff28aee335cec316a4",
+                "name": "Era Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T11:25:30.655Z",
+            "updatedAt": "2025-11-18T11:25:58.755Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "business@gobusly.com"
+            },
+            "destination": {
+                "from": "prishtina",
+                "to": "tetovo"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691c57bc28aee335cec316b6",
+            "code": "ERA_TOURS/prishtina-tetovo",
+            "operator": {
+                "_id": "691c56ff28aee335cec316a4",
+                "name": "Era Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T11:25:48.618Z",
+            "updatedAt": "2025-11-18T11:25:59.310Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "prishtina",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "674865fbaf5d19283bb5c24e",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691cd1fe0deac044861976b8",
+            "code": "MOTOJA/prishtine-skopje",
+            "operator": {
+                "_id": "691cd1850deac044861976a9",
+                "name": "Motoja"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T20:07:26.960Z",
+            "updatedAt": "2025-11-18T20:16:00.559Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "prishtina"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691cd20f0deac044861976bd",
+            "code": "MOTOJA/skopje-prishtine",
+            "operator": {
+                "_id": "691cd1850deac044861976a9",
+                "name": "Motoja"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T20:07:43.348Z",
+            "updatedAt": "2025-11-18T20:16:01.198Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "prishtina"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691cd52c0deac04486198599",
+            "code": "AMALFI/skopje-prishtina",
+            "operator": {
+                "_id": "691cd4640deac0448619858a",
+                "name": "Amalfi Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T20:21:00.687Z",
+            "updatedAt": "2025-11-18T20:30:02.323Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "prishtina",
+                "to": "skopje"
+            },
+            "stations": {
+                "from": "674865fbaf5d19283bb5c24e",
+                "to": "67b5e94e58ac1bee83221ca5"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691cd5490deac0448619859d",
+            "code": "AMALFI/prishtina-skopje",
+            "operator": {
+                "_id": "691cd4640deac0448619858a",
+                "name": "Amalfi Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T20:21:29.379Z",
+            "updatedAt": "2025-11-18T20:30:02.767Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "prishtina",
+                "to": "struga"
+            },
+            "stations": {
+                "from": "674865fbaf5d19283bb5c24e",
+                "to": "67b5e89658ac1bee83221c9b"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691cd5620deac044861985a2",
+            "code": "AMALFI/prishtina-struga",
+            "operator": {
+                "_id": "691cd4640deac0448619858a",
+                "name": "Amalfi Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T20:21:54.198Z",
+            "updatedAt": "2025-11-18T20:30:03.166Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "struga",
+                "to": "prishtina"
+            },
+            "stations": {
+                "from": "67b5e89658ac1bee83221c9b",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691cd57b0deac044861985a7",
+            "code": "AMALFI/struga-prishtina",
+            "operator": {
+                "_id": "691cd4640deac0448619858a",
+                "name": "Amalfi Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-18T20:22:19.569Z",
+            "updatedAt": "2025-11-18T20:30:03.553Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "tirana",
+                "to": "sarande"
+            },
+            "stations": {
+                "from": "67486704af5d19283bb5c252",
+                "to": "691e3785e5397e7c00605bdf"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691e386ae5397e7c00605bf0",
+            "code": "DELVINA/tirana-sarande-everyday",
+            "operator": {
+                "_id": "691e35dde5397e7c00605baf",
+                "name": "Tisa Travel"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-19T21:36:42.943Z",
+            "updatedAt": "2025-11-19T21:53:02.372Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "delvine",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "691e3815e5397e7c00605be6",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691e38a5e5397e7c00605bfa",
+            "code": "DELVINA/delvine-tirana-everyday",
+            "operator": {
+                "_id": "691e35dde5397e7c00605baf",
+                "name": "Tisa Travel"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-19T21:37:41.676Z",
+            "updatedAt": "2025-11-19T21:53:02.985Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "tirana",
+                "to": "delvina"
+            },
+            "stations": {
+                "from": "67486704af5d19283bb5c252",
+                "to": "691e3815e5397e7c00605be6"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691e3a36e5397e7c00608cbb",
+            "code": "DELVINA/tirana-delvine-everyday",
+            "operator": {
+                "_id": "691e35dde5397e7c00605baf",
+                "name": "Tisa Travel"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-19T21:44:22.153Z",
+            "updatedAt": "2025-11-19T21:53:03.750Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "tirana",
+                "to": "sofia"
+            },
+            "stations": {
+                "from": "67486704af5d19283bb5c252",
+                "to": "691f5d3a7bc4ea04c5953e92"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f5e5edd8a6abf761d6c8b",
+            "code": "NELA/tirana-sofia",
+            "operator": {
+                "_id": "691f5cd77bc4ea04c5953e7e",
+                "name": "Nela Travel & Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:30:54.319Z",
+            "updatedAt": "2025-11-30T19:58:59.922Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "sofia",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "691f5d3a7bc4ea04c5953e92",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f5e6ddd8a6abf761d6c90",
+            "code": "NELA/sofia-tirana",
+            "operator": {
+                "_id": "691f5cd77bc4ea04c5953e7e",
+                "name": "Nela Travel & Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:31:09.531Z",
+            "updatedAt": "2025-11-30T19:58:57.181Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "tirana",
+                "to": "athens"
+            },
+            "stations": {
+                "from": "67486704af5d19283bb5c252",
+                "to": "691f60d2dd8a6abf761d719b"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f6165dd8a6abf761d71aa",
+            "code": "AMR_TRAVEL/tirana-athens-everyday",
+            "operator": {
+                "_id": "691f5fe0dd8a6abf761d718c",
+                "name": "AMR Travel"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:43:49.346Z",
+            "updatedAt": "2025-11-30T19:58:56.789Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "athens",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "691f60d2dd8a6abf761d719b",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f6174dd8a6abf761d71af",
+            "code": "AMR_TRAVEL/athens-tirana-everyday",
+            "operator": {
+                "_id": "691f5fe0dd8a6abf761d718c",
+                "name": "AMR Travel"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:44:04.203Z",
+            "updatedAt": "2025-11-30T19:58:56.353Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "tirana",
+                "to": "thessaloniki"
+            },
+            "stations": {
+                "from": "67486704af5d19283bb5c252",
+                "to": "691f6080dd8a6abf761d7197"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f618ddd8a6abf761d71b3",
+            "code": "AMR_TRAVEL/tirana-thessaloniki-everyday",
+            "operator": {
+                "_id": "691f5fe0dd8a6abf761d718c",
+                "name": "AMR Travel"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:44:29.557Z",
+            "updatedAt": "2025-11-30T19:58:55.947Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "thessaloniki",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "691f6080dd8a6abf761d7197",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f61a1dd8a6abf761d71b8",
+            "code": "AMR_TRAVEL/thessaloniki-tirana-everyday",
+            "operator": {
+                "_id": "691f5fe0dd8a6abf761d718c",
+                "name": "AMR Travel"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:44:49.653Z",
+            "updatedAt": "2025-11-30T19:58:55.515Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "prishtina",
+                "to": "nish"
+            },
+            "stations": {
+                "from": "674865fbaf5d19283bb5c24e",
+                "to": "691f642edd8a6abf761d9418"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f649cdd8a6abf761d9424",
+            "code": "ADIO_TOURS/prishtina-nish",
+            "operator": {
+                "_id": "691f63a6dd8a6abf761d9404",
+                "name": "Adio Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:57:32.441Z",
+            "updatedAt": "2025-11-30T19:58:55.123Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "belgrade",
+                "to": "prizren"
+            },
+            "stations": {
+                "from": "691f63dddd8a6abf761d9413",
+                "to": "67486696af5d19283bb5c250"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f64cfdd8a6abf761d9429",
+            "code": "ADIO_TOURS/belgrade-prizren",
+            "operator": {
+                "_id": "691f63a6dd8a6abf761d9404",
+                "name": "Adio Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:58:23.792Z",
+            "updatedAt": "2025-11-30T19:58:54.735Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "prizren",
+                "to": "belgrade"
+            },
+            "stations": {
+                "from": "67486696af5d19283bb5c250",
+                "to": "691f63dddd8a6abf761d9413"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f64eedd8a6abf761d942e",
+            "code": "ADIO_TOURS/prizren-belgrade",
+            "operator": {
+                "_id": "691f63a6dd8a6abf761d9404",
+                "name": "Adio Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:58:54.500Z",
+            "updatedAt": "2025-11-30T19:58:54.342Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "nish",
+                "to": "prishtina"
+            },
+            "stations": {
+                "from": "691f642edd8a6abf761d9418",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f6520dd8a6abf761d9434",
+            "code": "ADIO_TOURS/nish-prishtina",
+            "operator": {
+                "_id": "691f63a6dd8a6abf761d9404",
+                "name": "Adio Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T18:59:44.133Z",
+            "updatedAt": "2025-11-30T19:58:53.803Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "belgrade",
+                "to": "prishtina"
+            },
+            "stations": {
+                "from": "691f63dddd8a6abf761d9413",
+                "to": "674865fbaf5d19283bb5c24e"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f6531dd8a6abf761d943a",
+            "code": "ADIO_TOURS/belgrade-prishtina",
+            "operator": {
+                "_id": "691f63a6dd8a6abf761d9404",
+                "name": "Adio Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T19:00:01.011Z",
+            "updatedAt": "2025-11-30T19:58:52.368Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+38976224065",
+                "email": "contact@gobusly.com"
+            },
+            "destination": {
+                "from": "prishtina",
+                "to": "belgrade"
+            },
+            "stations": {
+                "from": "674865fbaf5d19283bb5c24e",
+                "to": "691f63dddd8a6abf761d9413"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "metadata": {
+                "bookable": false
+            },
+            "_id": "691f6542dd8a6abf761d943e",
+            "code": "ADIO_TOURS/prishtina-belgrade",
+            "operator": {
+                "_id": "691f63a6dd8a6abf761d9404",
+                "name": "Adio Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-11-20T19:00:18.073Z",
+            "updatedAt": "2025-11-30T19:58:53.007Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 75 234 977",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "gostivar",
+                "to": "hohenems"
+            },
+            "stations": {
+                "from": "67b5e90058ac1bee83221c9f",
+                "to": "67b5efda58ac1bee83221cfb"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "69373c91d9a6d347d2adea1a",
+            "code": "EUROTURIST_GV/gostivar-hohenems",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-12-08T21:01:05.555Z",
+            "updatedAt": "2025-12-08T21:01:05.555Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 75 234 977",
+                "email": "euroturist.gv@gmail.com"
+            },
+            "destination": {
+                "from": "hohenems",
+                "to": "gostivar"
+            },
+            "stations": {
+                "from": "67b5efda58ac1bee83221cfb",
+                "to": "67b5e90058ac1bee83221c9f"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "69373cacd9a6d347d2adea1f",
+            "code": "EUROTURIST_GV/hohenems-gostivar",
+            "operator": {
+                "_id": "690d1706b08d401dd5ac602c",
+                "name": "Euro Turist"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2025-12-08T21:01:32.297Z",
+            "updatedAt": "2025-12-08T21:01:32.297Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "075 468 077",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "hanover"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "6962c56cae0cffef31e69495"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "6962c5e6ae0cffef31e694a2",
+            "code": "IDOTOURS-NMK-DE/LINJA_E_RREGULLT-MERKURE-PREMTE",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-10T21:34:30.441Z",
+            "updatedAt": "2026-01-10T21:34:30.441Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "075 468 077",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "hanover",
+                "to": "tetovo"
+            },
+            "stations": {
+                "from": "6962c56cae0cffef31e69495",
+                "to": "67b5e92f58ac1bee83221ca3"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "6962c611ae0cffef31e694a7",
+            "code": "IDOTOURS-DE-NMK/LINJA_E_RREGULLT-MERKURE-SHTUNE",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-10T21:35:13.513Z",
+            "updatedAt": "2026-01-10T21:35:13.513Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 76 256 788",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "69656ef4054aaae2753c53aa",
+            "code": "IDOTOURS/NMK-AL/CDO_DIT/diten",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-12T22:00:20.631Z",
+            "updatedAt": "2026-01-12T22:00:20.631Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 76 256 788",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "69656f01054aaae2753c53af",
+            "code": "IDOTOURS/NMK-AL/CDO_DIT/naten",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-12T22:00:33.897Z",
+            "updatedAt": "2026-01-12T22:00:33.897Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 76 256 788",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "69656f0d054aaae2753c53b3",
+            "code": "IDOTOURS/AL-NMK/CDO_DIT/diten",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-12T22:00:45.297Z",
+            "updatedAt": "2026-01-12T22:00:45.297Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 76 256 788",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "skopje",
+                "to": "tirana"
+            },
+            "stations": {
+                "from": "67b5e94e58ac1bee83221ca5",
+                "to": "67486704af5d19283bb5c252"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "69656f11054aaae2753c53b7",
+            "code": "IDOTOURS/AL-NMK/CDO_DIT/naten",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-12T22:00:49.510Z",
+            "updatedAt": "2026-01-12T22:00:49.510Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 076 256 788 ",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "gostivar"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "67b5e90058ac1bee83221c9f"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "696803402f44e779df26e87c",
+            "code": "IDOTOURS/te-gv/monday-saturday",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-14T20:57:36.341Z",
+            "updatedAt": "2026-01-14T20:57:36.341Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 076 256 788 ",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "gostivar",
+                "to": "tetovo"
+            },
+            "stations": {
+                "from": "67b5e90058ac1bee83221c9f",
+                "to": "67b5e92f58ac1bee83221ca3"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 15,
+                "size": "50x50x50"
+            },
+            "_id": "696803522f44e779df26e880",
+            "code": "IDOTOURS/gv-te/monday-saturday",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-01-14T20:57:54.352Z",
+            "updatedAt": "2026-01-14T20:57:54.352Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 75 468 055",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "bern"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "67b5ef3958ac1bee83221cef"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "69a76feec2880468b758815d",
+            "code": "IDOTOURS/tetovo-bern/E_MARTE_LINJA_E_RREGULLT",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-03-03T23:34:06.007Z",
+            "updatedAt": "2026-03-03T23:34:06.007Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+389 75 468 055",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "tetovo",
+                "to": "bern"
+            },
+            "stations": {
+                "from": "67b5e92f58ac1bee83221ca3",
+                "to": "67b5ef3958ac1bee83221cef"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "69a76ff8c2880468b7588161",
+            "code": "IDOTOURS/tetovo-bern/E_PREMTE_LINJA_E_RREGULLT",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-03-03T23:34:16.134Z",
+            "updatedAt": "2026-03-03T23:34:16.134Z",
+            "__v": 0
+        },
+        {
+            "contact": {
+                "phone": "+41 76 233 257",
+                "email": "info@idotours.com.mk"
+            },
+            "destination": {
+                "from": "bern",
+                "to": "tetovo"
+            },
+            "stations": {
+                "from": "67b5ef3958ac1bee83221cef",
+                "to": "67b5e92f58ac1bee83221ca3"
+            },
+            "luggages": {
+                "free": 1,
+                "price_for_extra": 10,
+                "size": "50x50x50"
+            },
+            "_id": "69a785a7c2880468b758af99",
+            "code": "IDOTOURS/bern-tetovo/E_MARTE_E_PREMTE_LINJA_E_RREGULLT",
+            "operator": {
+                "_id": "69aedad561543c98e1b9b2ea",
+                "name": "Ido Tours"
+            },
+            "stop_sequence": [],
+            "is_active": true,
+            "generate_tickets_automatically": true,
+            "createdAt": "2026-03-04T01:06:47.295Z",
+            "updatedAt": "2026-03-04T01:06:47.295Z",
+            "__v": 0
+        }
+    ]
+}

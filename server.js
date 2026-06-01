@@ -194,15 +194,12 @@ if (cluster.isMaster) {
 
   app.post("/mcp", async (req, res) => {
     try {
-      // Create a new transport for this request
       const transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: undefined
       });
 
-      // Connect the existing global 'mcp' server to this transport
       await mcp.connect(transport);
 
-      // Let the transport handle the request and response
       await transport.handleRequest(req, res, req.body);
     } catch (err) {
       console.error("MCP Request Error:", err);

@@ -11,8 +11,8 @@ const Booking = require("../models/Booking");
 const { create: createBooking } = require("./booking-controller");
 const { users } = require("../appwrite/appwrite.config");
 
-const HALKBANK_CURRENCY_CODE = "807";
-const HALKBANK_STORE_TYPE = "3d_pay_hosting";
+const HALKBANK_CURRENCY_CODE = process.env.HALKBANK_CURRENCY_CODE || "807";
+const HALKBANK_STORE_TYPE = process.env.HALKBANK_STORE_TYPE || "3D_Pay_Hosting";
 const DEFAULT_EUR_TO_MKD_RATE = 61.5;
 
 function getRequiredEnv(name) {
