@@ -1094,7 +1094,13 @@ module.exports = {
           };
 
           const ticketsForLine = await Ticket.find(ticketQuery)
-            .populate('route_number')
+            .populate({
+              path: 'route_number',
+              populate: [
+                { path: 'stations.from' },
+                { path: 'stations.to' }
+              ]
+            })
             .sort({ departure_date: 'asc' });
 
           const ticketsForLineWithBookings = ticketsForLine.map((ticket) => {
