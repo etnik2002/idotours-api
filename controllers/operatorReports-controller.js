@@ -286,12 +286,25 @@ module.exports = {
                     };
                 }
 
+                const departureStation =
+                    booking.destinations?.departure_station?.name ||
+                    booking.destinations?.departure_station_label ||
+                    booking.labels?.from_city ||
+                    'N/A';
+                const arrivalStation =
+                    booking.destinations?.arrival_station?.name ||
+                    booking.destinations?.arrival_station_label ||
+                    booking.labels?.to_city ||
+                    'N/A';
+
                 booking.passengers.forEach(p => {
                     reports[routeId].passengers.push({
                         full_name: p.full_name,
                         phone: p.phone,
                         email: p.email,
                         price: p.price,
+                        departure_station: departureStation,
+                        arrival_station: arrivalStation,
                         age: p.age,
                         birthdate: p.birthdate
                     });

@@ -4,6 +4,7 @@ const { ok, server_error, error_404 } = require("../functions/responses");
 const Route = require("../models/Route");
 const Ticket = require("../models/Ticket");
 const PushNotifications = require("../models/PushNotifications");
+const apicache = require("apicache");
 
 module.exports = {
     createRoute: async (req, res) => {
@@ -106,7 +107,12 @@ module.exports = {
 
     disableRoute: async (req, res) => {
         try {
-            const disabled = await Route.findByIdAndUpdate(req.params.routeId, { 'metadata.bookable': false });
+            const disabled = await Route.findByIdAndUpdate(
+                req.params.routeId,
+                { 'metadata.bookable': false },
+                { new: true }
+            );
+            apicache.clear();
             ok(res, "Route disabled", disabled);
         } catch (error) {
             server_error(res, error.message || error.response.message, null);
@@ -115,15 +121,31 @@ module.exports = {
 
     enableRoute: async (req, res) => {
         try {
-            const enabled = await Route.findByIdAndUpdate(req.params.routeId, { 'metadata.bookable': true });
-            console.log({ enabled });
+            const enabled = await Route.findByIdAndUpdate(
+                req.params.routeId,
+                { 'metadata.bookable': true },
+                { new: true }
+            );
 
-            const notifications = await PushNotifications.find({ route: enabled._id });
-            console.log({ notifications });
-            const response = await axios.post(`${process.env.MOBILE_BASE_API_URL}/notifications/send-route-available-notification`, notifications);
-            console.log({ response: response.data });
+            if (!enabled) {
+                return error_404(res, "Route not found", null);
+            }
 
-            ok(res, "Route disabled", response);
+            apicache.clear();
+
+            try {
+                const notifications = await PushNotifications.find({ route: enabled._id });
+                if (notifications.length > 0 && process.env.MOBILE_BASE_API_URL) {
+                    await axios.post(
+                        `${process.env.MOBILE_BASE_API_URL}/notifications/send-route-available-notification`,
+                        notifications
+                    );
+                }
+            } catch (notificationError) {
+                console.error("Route enabled, but notifications failed:", notificationError.message);
+            }
+
+            ok(res, "Route enabled", enabled);
         } catch (error) {
             server_error(res, error.message || error.response.message, null);
         }

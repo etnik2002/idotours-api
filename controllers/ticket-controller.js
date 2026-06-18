@@ -397,6 +397,11 @@ module.exports = {
           }
         },
         {
+          $match: {
+            "route.metadata.bookable": { $ne: false }
+          }
+        },
+        {
           $lookup: {
             from: "stations",
             localField: "route.stop_sequence",
@@ -559,6 +564,11 @@ module.exports = {
             "relevantStops.to": { $arrayElemAt: ["$toStation", 0] },
             route: { $arrayElemAt: ["$route", 0] },
             operatorInfo: { $arrayElemAt: ["$operatorInfo", 0] }
+          }
+        },
+        {
+          $match: {
+            "route.metadata.bookable": { $ne: false }
           }
         },
         {
@@ -1084,7 +1094,6 @@ module.exports = {
           };
 
           const ticketsForLine = await Ticket.find(ticketQuery)
-            .select('-stops')
             .populate('route_number')
             .sort({ departure_date: 'asc' });
 
