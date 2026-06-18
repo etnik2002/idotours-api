@@ -123,6 +123,64 @@ const getAgencyDebtSplit = (total, agency) => {
   };
 };
 
+const escapeRegex = (value) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const buildOperatorBookingsQuery = (operatorId, searchValue = "") => {
+  const query = {
+    operator: operatorId,
+    "metadata.refund_action.is_refunded": false,
+  };
+  const search = String(searchValue).trim();
+
+  if (!search) return query;
+
+  const regex = new RegExp(escapeRegex(search), "i");
+  const searchableFields = [
+    "appwrite_user_id",
+    "passengers.full_name",
+    "passengers.email",
+    "passengers.phone",
+    "passengers.birthdate",
+    "labels.from_city",
+    "labels.to_city",
+    "destinations.departure_station_label",
+    "destinations.arrival_station_label",
+    "platform",
+    "metadata.transaction_id",
+    "metadata.payment_intent_id",
+    "metadata.halkbank.auth_code",
+    "metadata.halkbank.transaction_id",
+    "metadata.halkbank.host_ref_num",
+  ];
+  const searchConditions = searchableFields.map((field) => ({
+    [field]: regex,
+  }));
+
+  if (mongoose.Types.ObjectId.isValid(search)) {
+    const objectId = new mongoose.Types.ObjectId(search);
+    searchConditions.push(
+      { _id: objectId },
+      { user: objectId },
+      { ticket: objectId },
+      { route: objectId },
+      { agency: objectId },
+      { affiliate: objectId },
+    );
+  }
+
+  const numericSearch = Number(search);
+  if (Number.isFinite(numericSearch)) {
+    searchConditions.push(
+      { price: numericSearch },
+      { service_fee: numericSearch },
+      { "passengers.price": numericSearch },
+    );
+  }
+
+  return { ...query, $or: searchConditions };
+};
+
 module.exports = {
 
   create: async (req, res) => {
@@ -268,26 +326,23 @@ module.exports = {
   getByOperator: async (req, res) => {
     try {
       const { operator_id } = req.params;
-      let { select, populate, page = 1, limit = 10 } = req.query;
+      let { select, populate, page = 1, limit = 10, search = "" } = req.query;
 
       page = parseInt(page);
       limit = parseInt(limit);
       const skip = (page - 1) * limit;
+      const query = buildOperatorBookingsQuery(operator_id, search);
 
-      const bookings = await Booking.find({ operator: operator_id, "metadata.refund_action.is_refunded": false })
+      const bookings = await Booking.find(query)
         .populate(populate)
         .sort({ createdAt: 'desc' })
         .select(select)
         .skip(skip)
         .limit(limit);
 
-      if (!bookings || bookings.length === 0) {
-        return res.status(404).json({ message: "No booking found", data: null })
-      }
-
       return res.status(200).json({ message: "Booking reports data", data: bookings })
     } catch (error) {
-      server_error(res, "", null);
+      server_error(res, error.message, null);
     }
   },
 
@@ -342,10 +397,39 @@ module.exports = {
   getTotalBookingsCountByOperatorId: async (req, res) => {
     try {
       const { operator_id } = req.params;
-      const totalCount = await Booking.countDocuments({ operator: operator_id });
+      const { search = "" } = req.query;
+      const totalCount = await Booking.countDocuments(
+        buildOperatorBookingsQuery(operator_id, search),
+      );
       ok(res, "Total count", totalCount)
     } catch (error) {
-      server_error(res, "", null);
+      server_error(res, error.message, null);
+    }
+  },
+
+  deleteBookingByOperator: async (req, res) => {
+    try {
+      const { booking_id, operator_id } = req.params;
+
+      if (
+        !mongoose.Types.ObjectId.isValid(booking_id) ||
+        !mongoose.Types.ObjectId.isValid(operator_id)
+      ) {
+        return bad_request(res, "Invalid booking or operator id", null);
+      }
+
+      const deletedBooking = await Booking.findOneAndDelete({
+        _id: booking_id,
+        operator: operator_id,
+      });
+
+      if (!deletedBooking) {
+        return error_404(res, "Booking not found", null);
+      }
+
+      return ok(res, "Booking deleted permanently", deletedBooking._id);
+    } catch (error) {
+      return server_error(res, error.message, null);
     }
   },
 

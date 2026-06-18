@@ -2,7 +2,7 @@ const router = require("express").Router();
 
 const { verifyBookingFlex } = require("../auth/booking");
 const { requestLimiter } = require("../auth/limiter");
-const { getByRoute, getByOperator, getByAgencyId, getAll, create, createAgencyBooking, createManualBooking, getByUserId, generateETicketForMobileAPI, scanBoardingPass, retreiveBookingByIdAndEmail, getByIdClient, getByIdOperator, editBookingDetails, cancelBookingAndRefund, rescheduleBooking, getByIds, downloadEBooking, upgradeTravelFlex, getTotalBookingsCountByOperatorId, downloadEBookingMobileAPI } = require("../controllers/booking-controller");
+const { getByRoute, getByOperator, getByAgencyId, getAll, create, createAgencyBooking, createManualBooking, getByUserId, generateETicketForMobileAPI, scanBoardingPass, retreiveBookingByIdAndEmail, getByIdClient, getByIdOperator, editBookingDetails, cancelBookingAndRefund, rescheduleBooking, getByIds, downloadEBooking, upgradeTravelFlex, getTotalBookingsCountByOperatorId, downloadEBookingMobileAPI, deleteBookingByOperator } = require("../controllers/booking-controller");
 const apicache = require("apicache");
 const { saveNewDepartureDate } = require("../controllers/ticket-controller");
 const { refund } = require("../controllers/payment-controller");
@@ -27,7 +27,7 @@ router.post('/:booking_id/upgrade-flex', upgradeTravelFlex)
 
 router.post('/change/departure-date/:booking_id', saveNewDepartureDate)
 
-router.get('/count/operator/:operator_id', cache('5 minutes'), getTotalBookingsCountByOperatorId)
+router.get('/count/operator/:operator_id', getTotalBookingsCountByOperatorId)
 
 router.get('/client/:id', getByIdClient);
 
@@ -42,6 +42,8 @@ router.get("/user/:user_id", cache("1 minutes"), getByUserId);
 router.get("/operator/:operator_id", getByOperator);
 
 router.get("/agency/:agency_id", getByAgencyId);
+
+router.delete("/operator/:operator_id/:booking_id", deleteBookingByOperator);
 
 router.post("/scan/boarding-pass/:driver_id/:booking_id/:passenger_id", scanBoardingPass);
 
