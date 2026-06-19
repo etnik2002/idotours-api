@@ -1,6 +1,6 @@
 require("dotenv").config()
 const { default: axios } = require("axios");
-const { ok, server_error, error_404 } = require("../functions/responses");
+const { ok, server_error, error_404, bad_request } = require("../functions/responses");
 const Route = require("../models/Route");
 const Ticket = require("../models/Ticket");
 const PushNotifications = require("../models/PushNotifications");
@@ -74,6 +74,30 @@ module.exports = {
             ok(res, "Successfully deleted", null);
         } catch (error) {
             server_error(res, error || error.response.message, null);
+        }
+    },
+
+    cleanFutureTickets: async (req, res) => {
+        try {
+            const route = await Route.findById(req.params.id).select("_id");
+            if (!route) {
+                return error_404(res, "Route not found", null);
+            }
+
+            const deletedTickets = await Ticket.deleteMany({
+                route_number: route._id,
+                departure_date: { $gte: new Date() }
+            });
+
+            apicache.clear();
+
+            return ok(
+                res,
+                "Upcoming tickets deleted successfully",
+                { deleted_count: deletedTickets.deletedCount }
+            );
+        } catch (error) {
+            return server_error(res, error.message || "Could not clean route tickets", null);
         }
     },
 

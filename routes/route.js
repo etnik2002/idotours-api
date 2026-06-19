@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { requestLimiter } = require("../auth/limiter");
-const { createRoute, getByOperator, getAll, deleteById, getMapDisplayRoutes, disableRoute, enableRoute } = require("../controllers/route-controller");
+const { createRoute, getByOperator, getAll, deleteById, cleanFutureTickets, getMapDisplayRoutes, disableRoute, enableRoute } = require("../controllers/route-controller");
 const apicache = require("apicache");
 const Route = require("../models/Route");
 const cache = apicache.middleware;
@@ -22,6 +22,8 @@ router.get("/operator/:operator_id", cache("1 minutes"), getByOperator);
 router.get("/", cache("1 minutes"), getAll);
 
 router.post('/delete/:id', deleteById);
+
+router.post('/clean/:id', cleanFutureTickets);
 
 router.get('/map-display', cache("20 minutes"), getMapDisplayRoutes)
 
