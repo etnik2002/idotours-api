@@ -748,6 +748,18 @@ module.exports = {
   },
 
   createManualBooking: async (req, res) => {
+    const reservedSeats = [];
+    const createdBookingIds = [];
+    const restoreReservedSeats = async () => {
+      while (reservedSeats.length) {
+        const reservation = reservedSeats[reservedSeats.length - 1];
+        await Ticket.findByIdAndUpdate(reservation.ticketId, {
+          $inc: { number_of_tickets: reservation.seatCount },
+        });
+        reservedSeats.pop();
+      }
+    };
+
     try {
       const operator_id = process.env.HARDCODED_OPERATOR_ID;
       const {
@@ -760,20 +772,37 @@ module.exports = {
         arrival_station_label,
         from_city,
         to_city,
-        is_paid
+        is_paid,
+        return_journey,
       } = req.body;
 
       if (!passengers || passengers.length < 1) {
         return bad_request(res, "Number of passengers should be at least one");
       }
 
-      const ticket = await Ticket.findById(ticket_id).populate("route_number");
+      if (
+        return_journey &&
+        (!return_journey.ticket_id ||
+          !return_journey.departure_date ||
+          !return_journey.departure_station ||
+          !return_journey.arrival_station)
+      ) {
+        return bad_request(res, "Return journey details are incomplete");
+      }
+
+      const [ticket, returnTicket] = await Promise.all([
+        Ticket.findById(ticket_id).populate("route_number"),
+        return_journey?.ticket_id
+          ? Ticket.findById(return_journey.ticket_id).populate("route_number")
+          : null,
+      ]);
+
       if (!ticket) {
         return error_404(res, "Ticket not found", null);
       }
 
-      if (passengers.length > ticket.number_of_tickets) {
-        return bad_request(res, "Not enough seats left");
+      if (return_journey && !returnTicket) {
+        return error_404(res, "Return ticket not found", null);
       }
 
       const selectedStop = getSelectedStop(ticket, departure_station, arrival_station);
@@ -781,15 +810,94 @@ module.exports = {
         return bad_request(res, "Ticket stop not found");
       }
 
+      const returnStop = return_journey
+        ? getSelectedStop(
+            returnTicket,
+            return_journey.departure_station,
+            return_journey.arrival_station,
+          )
+        : null;
+
+      if (return_journey && !returnStop) {
+        return bad_request(res, "Return ticket stop not found");
+      }
+
+      if (
+        return_journey &&
+        (getIdValue(returnStop.from) !== arrival_station?.toString() ||
+          getIdValue(returnStop.to) !== departure_station?.toString())
+      ) {
+        return bad_request(
+          res,
+          "Return ticket must travel from the arrival station back to the departure station",
+        );
+      }
+
+      if (
+        return_journey &&
+        new Date(return_journey.departure_date) < new Date(departure_date)
+      ) {
+        return bad_request(
+          res,
+          "Return date cannot be before the departure date",
+        );
+      }
+
       let pricedBooking;
+      let pricedReturnBooking;
       try {
         pricedBooking = normalizePricedPassengers(
           passengers,
           selectedStop,
           departure_date || ticket.departure_date,
         );
+        if (return_journey) {
+          pricedReturnBooking = normalizePricedPassengers(
+            passengers,
+            returnStop,
+            return_journey.departure_date || returnTicket.departure_date,
+          );
+        }
       } catch (error) {
         return bad_request(res, error.message);
+      }
+
+      const seatRequirements = new Map();
+      const addSeatRequirement = (id) => {
+        const key = id.toString();
+        seatRequirements.set(
+          key,
+          (seatRequirements.get(key) || 0) + passengers.length,
+        );
+      };
+
+      addSeatRequirement(ticket._id);
+      if (returnTicket) addSeatRequirement(returnTicket._id);
+
+      for (const [requiredTicketId, seatCount] of seatRequirements) {
+        const updatedTicket = await Ticket.findOneAndUpdate(
+          {
+            _id: requiredTicketId,
+            number_of_tickets: { $gte: seatCount },
+          },
+          { $inc: { number_of_tickets: -seatCount } },
+          { new: true },
+        );
+
+        if (!updatedTicket) {
+          await restoreReservedSeats();
+          return bad_request(
+            res,
+            requiredTicketId === returnTicket?._id?.toString()
+              ? "Not enough seats left for the return ticket"
+              : "Not enough seats left",
+          );
+        }
+
+        reservedSeats.push({
+          ticketId: requiredTicketId,
+          seatCount,
+        });
       }
 
       const newBooking = new Booking({
@@ -820,13 +928,69 @@ module.exports = {
       });
 
       await newBooking.save();
+      createdBookingIds.push(newBooking._id);
 
-      ticket.number_of_tickets -= passengers.length;
-      await ticket.save();
+      let newReturnBooking = null;
+      if (return_journey) {
+        newReturnBooking = new Booking({
+          ticket: return_journey.ticket_id,
+          operator: operator_id,
+          route: returnTicket.route_number?._id,
+          departure_date:
+            return_journey.departure_date || returnTicket.departure_date,
+          destinations: {
+            departure_station: return_journey.departure_station,
+            arrival_station: return_journey.arrival_station,
+            departure_station_label:
+              return_journey.departure_station_label,
+            arrival_station_label: return_journey.arrival_station_label,
+          },
+          labels: {
+            from_city:
+              return_journey.from_city || returnTicket.destination?.from,
+            to_city: return_journey.to_city || returnTicket.destination?.to,
+          },
+          price: pricedReturnBooking.totalPrice,
+          service_fee: 0,
+          passengers: pricedReturnBooking.pricedPassengers,
+          platform: PlatformTypes.WEB,
+          is_paid: is_paid === true || is_paid === "true" ? "true" : "false",
+          live_mode: process.env.ENV_TYPE == EnvTypes.PROD,
+          metadata: {
+            travel_flex: "NO_FLEX",
+            message: "Manual return booking from dashboard",
+          },
+        });
 
-      return ok(res, "Manual booking created successfully", newBooking);
+        await newReturnBooking.save();
+        createdBookingIds.push(newReturnBooking._id);
+
+        newBooking.return_booking = newReturnBooking._id;
+        await newBooking.save();
+      }
+
+      return ok(
+        res,
+        return_journey
+          ? "Manual return bookings created successfully"
+          : "Manual booking created successfully",
+        return_journey
+          ? {
+              outbound_booking: newBooking,
+              return_booking: newReturnBooking,
+            }
+          : newBooking,
+      );
     } catch (error) {
       console.error(error);
+
+      if (createdBookingIds.length) {
+        await Booking.deleteMany({ _id: { $in: createdBookingIds } }).catch(
+          console.error,
+        );
+      }
+      await restoreReservedSeats().catch(console.error);
+
       return server_error(res, error.message, null);
     }
   },

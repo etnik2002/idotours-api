@@ -14,6 +14,10 @@ const bookingSchema = mongoose.Schema({
         ref: 'Ticket',
         required: true,
     },
+    return_booking: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking',
+    },
     route: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Route',
