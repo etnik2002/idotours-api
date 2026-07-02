@@ -363,10 +363,12 @@ module.exports = {
         return error_404(res, "No booking found.", null);
       }
 
-      const charge = await stripe.charges.list({
-        limit: 1,
-        payment_intent: booking.metadata.payment_intent_id
-      });
+      const charge = booking.metadata?.payment_intent_id
+        ? await stripe.charges.list({
+            limit: 1,
+            payment_intent: booking.metadata.payment_intent_id,
+          })
+        : { data: [] };
 
 
 
@@ -763,6 +765,7 @@ module.exports = {
     try {
       const operator_id = process.env.HARDCODED_OPERATOR_ID;
       const {
+        operator_id: requested_operator_id,
         ticket_id,
         passengers,
         departure_date,
@@ -773,11 +776,23 @@ module.exports = {
         from_city,
         to_city,
         is_paid,
+        internal_comment,
+        ticket_comment,
+        open_return,
         return_journey,
       } = req.body;
+      const bookingOperatorId = requested_operator_id || operator_id;
+      const isOpenReturn = open_return === true || open_return === "true";
 
       if (!passengers || passengers.length < 1) {
         return bad_request(res, "Number of passengers should be at least one");
+      }
+
+      if (isOpenReturn && return_journey) {
+        return bad_request(
+          res,
+          "An open return cannot include a dated return journey",
+        );
       }
 
       if (
@@ -902,7 +917,7 @@ module.exports = {
 
       const newBooking = new Booking({
         ticket: ticket_id,
-        operator: operator_id,
+        operator: bookingOperatorId,
         route: ticket.route_number?._id,
         departure_date: departure_date || ticket.departure_date,
         destinations: {
@@ -923,7 +938,10 @@ module.exports = {
         live_mode: process.env.ENV_TYPE == EnvTypes.PROD,
         metadata: {
           travel_flex: "NO_FLEX",
-          message: "Manual booking from dashboard"
+          message: "Manual booking from dashboard",
+          open_return: isOpenReturn,
+          internal_comment: String(internal_comment || "").trim(),
+          ticket_comment: String(ticket_comment || "").trim(),
         },
       });
 
@@ -934,7 +952,7 @@ module.exports = {
       if (return_journey) {
         newReturnBooking = new Booking({
           ticket: return_journey.ticket_id,
-          operator: operator_id,
+          operator: bookingOperatorId,
           route: returnTicket.route_number?._id,
           departure_date:
             return_journey.departure_date || returnTicket.departure_date,
@@ -959,6 +977,8 @@ module.exports = {
           metadata: {
             travel_flex: "NO_FLEX",
             message: "Manual return booking from dashboard",
+            internal_comment: String(internal_comment || "").trim(),
+            ticket_comment: String(ticket_comment || "").trim(),
           },
         });
 
@@ -991,6 +1011,166 @@ module.exports = {
       }
       await restoreReservedSeats().catch(console.error);
 
+      return server_error(res, error.message, null);
+    }
+  },
+
+  completeOpenReturn: async (req, res) => {
+    let reservedTicketId = null;
+    let reservedSeatCount = 0;
+    let createdReturnBookingId = null;
+
+    try {
+      const { booking_id } = req.params;
+      const {
+        ticket_id,
+        departure_date,
+        departure_station,
+        arrival_station,
+        departure_station_label,
+        arrival_station_label,
+        from_city,
+        to_city,
+      } = req.body;
+
+      if (
+        !ticket_id ||
+        !departure_date ||
+        !departure_station ||
+        !arrival_station
+      ) {
+        return bad_request(res, "Return journey details are incomplete");
+      }
+
+      const [outboundBooking, returnTicket] = await Promise.all([
+        Booking.findById(booking_id),
+        Ticket.findById(ticket_id).populate("route_number"),
+      ]);
+
+      if (!outboundBooking) {
+        return error_404(res, "Outbound booking not found", null);
+      }
+
+      if (
+        !outboundBooking.metadata?.open_return ||
+        outboundBooking.return_booking
+      ) {
+        return bad_request(res, "This booking does not have an open return");
+      }
+
+      if (!returnTicket) {
+        return error_404(res, "Return ticket not found", null);
+      }
+
+      const returnStop = getSelectedStop(
+        returnTicket,
+        departure_station,
+        arrival_station,
+      );
+      if (!returnStop) {
+        return bad_request(res, "Return ticket stop not found");
+      }
+
+      if (
+        getIdValue(returnStop.from) !==
+          getIdValue(outboundBooking.destinations?.arrival_station) ||
+        getIdValue(returnStop.to) !==
+          getIdValue(outboundBooking.destinations?.departure_station)
+      ) {
+        return bad_request(
+          res,
+          "Return ticket must travel from the arrival station back to the departure station",
+        );
+      }
+
+      if (new Date(departure_date) < new Date(outboundBooking.departure_date)) {
+        return bad_request(
+          res,
+          "Return date cannot be before the departure date",
+        );
+      }
+
+      let pricedReturnBooking;
+      try {
+        pricedReturnBooking = normalizePricedPassengers(
+          outboundBooking.passengers.map((passenger) => passenger.toObject()),
+          returnStop,
+          departure_date,
+        );
+      } catch (error) {
+        return bad_request(res, error.message);
+      }
+
+      reservedSeatCount = outboundBooking.passengers.length;
+      const reservedTicket = await Ticket.findOneAndUpdate(
+        {
+          _id: returnTicket._id,
+          number_of_tickets: { $gte: reservedSeatCount },
+        },
+        { $inc: { number_of_tickets: -reservedSeatCount } },
+        { new: true },
+      );
+
+      if (!reservedTicket) {
+        return bad_request(res, "Not enough seats left for the return ticket");
+      }
+      reservedTicketId = returnTicket._id;
+
+      const returnBooking = new Booking({
+        ticket: returnTicket._id,
+        operator: outboundBooking.operator,
+        agency: outboundBooking.agency,
+        user: outboundBooking.user,
+        appwrite_user_id: outboundBooking.appwrite_user_id,
+        route: returnTicket.route_number?._id,
+        departure_date,
+        destinations: {
+          departure_station,
+          arrival_station,
+          departure_station_label,
+          arrival_station_label,
+        },
+        labels: {
+          from_city: from_city || returnTicket.destination?.from,
+          to_city: to_city || returnTicket.destination?.to,
+        },
+        price: pricedReturnBooking.totalPrice,
+        service_fee: 0,
+        passengers: pricedReturnBooking.pricedPassengers,
+        platform: outboundBooking.platform,
+        is_paid: outboundBooking.is_paid,
+        live_mode: outboundBooking.live_mode,
+        metadata: {
+          travel_flex: "NO_FLEX",
+          message: "Completed open return booking from dashboard",
+          internal_comment:
+            outboundBooking.metadata?.internal_comment || "",
+          ticket_comment: outboundBooking.metadata?.ticket_comment || "",
+        },
+      });
+
+      await returnBooking.save();
+      createdReturnBookingId = returnBooking._id;
+
+      outboundBooking.return_booking = returnBooking._id;
+      outboundBooking.metadata.open_return = false;
+      await outboundBooking.save();
+
+      return ok(res, "Open return completed successfully", {
+        outbound_booking: outboundBooking,
+        return_booking: returnBooking,
+      });
+    } catch (error) {
+      if (createdReturnBookingId) {
+        await Booking.findByIdAndDelete(createdReturnBookingId).catch(
+          console.error,
+        );
+      }
+      if (reservedTicketId && reservedSeatCount) {
+        await Ticket.findByIdAndUpdate(reservedTicketId, {
+          $inc: { number_of_tickets: reservedSeatCount },
+        }).catch(console.error);
+      }
       return server_error(res, error.message, null);
     }
   },

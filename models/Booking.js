@@ -181,6 +181,9 @@ const bookingSchema = mongoose.Schema({
         discount_codde: {type: String},
         discount_amount_in_cents: {type: Number},
         wallet_pass_added: { type: Boolean, default: false },
+        open_return: { type: Boolean, default: false },
+        internal_comment: { type: String, trim: true },
+        ticket_comment: { type: String, trim: true },
     },
     
     

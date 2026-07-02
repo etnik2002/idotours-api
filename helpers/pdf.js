@@ -16,6 +16,25 @@ const escapeAttribute = (value = '') => String(value)
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
+const escapeHtml = (value = '') => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+const getTicketCommentHtml = (booking) => {
+    const comment = String(booking?.metadata?.ticket_comment || '').trim();
+    if (!comment) return '';
+
+    return `
+        <div style="margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #f59e0b; border-radius: 0.5rem; background: #fffbeb;">
+            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #b45309; margin-bottom: 0.35rem;">Ticket comment</div>
+            <div style="font-size: 0.875rem; color: #78350f; white-space: pre-wrap; overflow-wrap: anywhere;">${escapeHtml(comment)}</div>
+        </div>
+    `;
+};
+
 const getAgencyLogoHtml = (booking) => {
     const agency = booking?.agency;
     if (!agency || typeof agency !== 'object') return '';
@@ -40,6 +59,7 @@ const generateETicket = async (booking, language = 'en') => {
     const formattedDepartureDate = moment.utc(booking?.departure_date).format('dddd, DD MMM YYYY');
     const formattedTime = moment.utc(booking?.departure_date).format('HH:mm');
     const agencyLogoHtml = getAgencyLogoHtml(booking);
+    const ticketCommentHtml = getTicketCommentHtml(booking);
 
     const results = [];
 
@@ -165,6 +185,7 @@ const generateETicket = async (booking, language = 'en') => {
                         </div>
                     </div>
                     <div class="right-column">
+                        ${ticketCommentHtml}
                         <div class="section-title">${t.additionalInformation}</div>
                         <div class="info-item">
                             <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -287,6 +308,7 @@ const generateSingleETicket = async (booking) => {
     const formattedDepartureDate = moment.utc(booking?.departure_date).format('dddd, DD MMM YYYY');
     const formattedTime = moment.utc(booking?.departure_date).format('HH:mm');
     const agencyLogoHtml = getAgencyLogoHtml(booking);
+    const ticketCommentHtml = getTicketCommentHtml(booking);
 
     const passengersHtml = booking?.passengers?.map((passenger, index) => `
         <div class="info-item">
@@ -662,6 +684,7 @@ const generateSingleETicket = async (booking) => {
                 </div>
                 
                 <div class="right-column">
+                    ${ticketCommentHtml}
                     <div class="section-title">Additional Information</div>
                     <div class="info-item" style="margin-bottom: 1rem;">
                         <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
