@@ -16,6 +16,29 @@ const { McpServer } = require("@modelcontextprotocol/sdk/server/mcp.js");
 const { StreamableHTTPServerTransport } = require("@modelcontextprotocol/sdk/server/streamableHttp.js");
 const { z } = require("zod");
 
+const buildMongoConnectionUrl = (sourceUrl) => {
+  if (!sourceUrl) {
+    throw new Error("MongoDB connection URL is missing");
+  }
+
+  const atlasSrvHost = "cluster0.iojzxkx.mongodb.net";
+  if (!sourceUrl.startsWith("mongodb+srv://") || !sourceUrl.includes(`@${atlasSrvHost}`)) {
+    return sourceUrl;
+  }
+
+  const directHosts = [
+    "ac-gql7dcn-shard-00-00.iojzxkx.mongodb.net:27017",
+    "ac-gql7dcn-shard-00-01.iojzxkx.mongodb.net:27017",
+    "ac-gql7dcn-shard-00-02.iojzxkx.mongodb.net:27017",
+  ].join(",");
+  const directUrl = sourceUrl
+    .replace("mongodb+srv://", "mongodb://")
+    .replace(`@${atlasSrvHost}`, `@${directHosts}`);
+  const separator = directUrl.includes("?") ? "&" : "?";
+
+  return `${directUrl}${separator}tls=true&authSource=admin&replicaSet=atlas-3hyu13-shard-0`;
+};
+
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
 
@@ -36,6 +59,11 @@ if (cluster.isMaster) {
   const bodyParser = require("body-parser");
   const session = require('express-session');
   const MongoStore = require('connect-mongo');
+  const configuredDatabaseUrl =
+    process.env.ENV_TYPE == EnvTypes.PROD
+      ? process.env.PROD_DATABASE_URL
+      : process.env.DATABASE_URL;
+  const databaseUrl = buildMongoConnectionUrl(configuredDatabaseUrl);
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -118,6 +146,7 @@ if (cluster.isMaster) {
   const walletRoutes = require("./routes/wallet");
   const abandonedRoutes = require("./routes/abandonedCheckout");
   const seoRoutes = require("./routes/seo");
+  const documentRoutes = require("./routes/documents");
 
   app.use('/operator', operatorRoutes);
   app.use('/agency', agencyRoutes);
@@ -139,6 +168,7 @@ if (cluster.isMaster) {
   app.use('/review', reviewRoutes);
   app.use('/contract', contractRoutes);
   app.use('/wallet', walletRoutes);
+  app.use('/documents', documentRoutes);
   app.use('/seo', seoRoutes);
   app.use('/', abandonedRoutes);
 
@@ -153,13 +183,13 @@ if (cluster.isMaster) {
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
-      mongoUrl: process.env.PROD_DATABASE_URL,
+      mongoUrl: databaseUrl,
     }),
   }));
 
 
   if (process.env.ENV_TYPE == EnvTypes.PROD) {
-    mongoose.connect(process.env.PROD_DATABASE_URL)
+    mongoose.connect(databaseUrl)
       .then(() => {
         console.log("Connected to [PROD] database!")
         // kt sda najsin kur tsosen kejt reminder translations ene kur de testohet se funksionon 99.99999 % majr
@@ -167,12 +197,7 @@ if (cluster.isMaster) {
       })
       .catch((err) => { console.log("Connection failed!", err) });
   } else {
-    const username = 'etnikz2002';
-    const password = 'Etnik002';
-    const mongoUrl = `mongodb+srv://${username}:${encodeURIComponent(password)}@cluster0.wcfare1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-    console.log({ mongoUrl });
-
-    mongoose.connect(mongoUrl)
+    mongoose.connect(databaseUrl)
       .then(() => {
         console.log("Connected to [DEV] database!")
         // startDepartureReminderCronJob();

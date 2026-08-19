@@ -15,6 +15,9 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const getPublicBookingId = (booking) =>
+  booking?.external_id || booking?._id?.toString() || '';
+
 
 const sendBookingConfirmationEmail = async (booking, operator) => {
   try {
@@ -79,7 +82,7 @@ const sendBookingConfirmationEmail = async (booking, operator) => {
 
           <div class="info-card">
             <div class="card-title">📋 Booking Information</div>
-            <div class="info-row"><span class="info-label">Booking ID:</span><span class="info-value">${booking._id}</span></div>
+            <div class="info-row"><span class="info-label">Booking ID:</span><span class="info-value">${getPublicBookingId(booking)}</span></div>
             <div class="info-row"><span class="info-label">Price:</span><span class="info-value">€ ${booking.price.toFixed(2)}</span></div>
             <div class="info-row"><span class="info-label">Platform:</span><span class="info-value">${booking.platform}</span></div>
           </div>
@@ -197,7 +200,7 @@ const sendBookingConfirmationEmailWithAttachment = async (booking, language = 'e
               
               <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
                   <h3 style="color: #1a2642; margin-top: 0;">${t.bookingDetails}</h3>
-                  <p><strong>${t.bookingId}</strong> ${booking._id}</p>
+                  <p><strong>${t.bookingId}</strong> ${getPublicBookingId(booking)}</p>
                   <p><strong>${t.from}</strong> ${booking.destinations.departure_station_label}</p>
                   <p><strong>${t.to}</strong> ${booking.destinations.arrival_station_label}</p>
                   <p><strong>${t.departure}</strong> ${moment.utc(booking.departure_date).toLocaleString()}</p>
@@ -692,7 +695,7 @@ const sendOperatorBookingNotification = async (booking, operator) => {
     const logourl = "https://www.gobusly.com/assets/icons/logo.png";
     const passengerCount = booking.passengers.length;
     const departureTimeLocal = moment.utc(booking.departure_date).format('dddd, MMMM Do YYYY [at] h:mm A');
-    const bookingId = booking._id?.toString();
+    const bookingId = getPublicBookingId(booking);
 
     const mailOptions = {
       from: process.env.EMAIL_FROM,
@@ -994,7 +997,7 @@ async function sendDepartureReminder(booking) {
     }
 
     const departureTimeLocal = moment.utc(booking?.departure_date).format('dddd, MMMM Do YYYY [at] h:mm A');
-    const bookingId = booking?._id?.toString()
+    const bookingId = getPublicBookingId(booking)
 
     const minutesUntilDeparture = moment.utc(booking?.departure_date).diff(moment.utc(), 'minutes');
 

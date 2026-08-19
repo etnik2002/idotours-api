@@ -196,20 +196,45 @@ module.exports = {
   editAgency: async (req, res) => {
     try {
       const { id } = req.params;
-      const updateData = req.body.agency;
+      const updateData = { ...(req.body.agency || {}) };
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return bad_request(res, "Invalid agency id", null);
+      }
+
+      const existingAgency = await Agency.findById(id);
+      if (!existingAgency) {
+        return error_404(res, "Agency not found", null);
+      }
+
+      if (updateData.email && updateData.email !== existingAgency.email) {
+        const duplicateAgency = await Agency.findOne({
+          _id: { $ne: id },
+          email: updateData.email,
+        }).select("_id");
+        if (duplicateAgency) {
+          return bad_request(res, "An agency with this email already exists", null);
+        }
+      }
+
+      if (updateData.company_metadata?.vat) {
+        updateData.company_metadata.tax_number = updateData.company_metadata.vat;
+        delete updateData.company_metadata.vat;
+      }
+
+      const plainPassword = updateData.password;
 
       if (updateData.password) {
         const salt = bcrypt.genSaltSync(10);
         updateData.password = bcrypt.hashSync(updateData.password, salt);
+      } else {
+        delete updateData.password;
       }
 
       const updatedAgency = await Agency.findByIdAndUpdate(id, { $set: updateData }, { new: true });
-      if (!updatedAgency) {
-        return error_404(res, "Agency not found", null);
-      }
 
-      if (updateData.password) {
-        await users.updatePassword(id, updateData.password);
+      if (plainPassword) {
+        await users.updatePassword(id, plainPassword);
       }
       if (updateData.name || updateData.email) {
         if (updateData.name) await users.updateName(id, updateData.name);

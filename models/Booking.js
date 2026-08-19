@@ -9,6 +9,12 @@ const bookingSchema = mongoose.Schema({
     appwrite_user_id:{
         type: String,
     },
+    external_id: {
+        type: String,
+        unique: true,
+        sparse: true,
+        index: true,
+    },
     ticket: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ticket',
@@ -184,9 +190,50 @@ const bookingSchema = mongoose.Schema({
         open_return: { type: Boolean, default: false },
         internal_comment: { type: String, trim: true },
         ticket_comment: { type: String, trim: true },
+        destination_country: { type: String, trim: true },
     },
     
     
 } , { timestamps : true });
+
+const getExternalIdCountryCode = (booking) => {
+    const source =
+        booking?.metadata?.destination_country ||
+        booking?.labels?.to_city ||
+        booking?.destinations?.arrival_station_label ||
+        "XX";
+    const normalized = String(source)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .toUpperCase();
+    return (normalized.slice(0, 2) || "XX").padEnd(2, "X");
+};
+
+bookingSchema.pre("validate", async function generateExternalBookingId(next) {
+    if (this.external_id) return next();
+
+    const countryCode = getExternalIdCountryCode(this);
+
+    try {
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+            const randomNumber = Math.floor(100000 + Math.random() * 900000);
+            const candidate = `IDB-${countryCode}${randomNumber}`;
+            const existing = await this.constructor.exists({
+                external_id: candidate,
+                _id: { $ne: this._id },
+            });
+
+            if (!existing) {
+                this.external_id = candidate;
+                return next();
+            }
+        }
+
+        next(new Error("Could not generate a unique booking external id"));
+    } catch (error) {
+        next(error);
+    }
+});
 
 module.exports = mongoose.model("Booking", bookingSchema);

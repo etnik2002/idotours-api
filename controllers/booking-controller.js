@@ -123,6 +123,23 @@ const getAgencyDebtSplit = (total, agency) => {
   };
 };
 
+const getDestinationCountry = (payload = {}, ticket = null) =>
+  payload.stop?.to?.country ||
+  payload.to_country ||
+  payload.arrival_station_country ||
+  payload.arrival_country ||
+  payload.to_city ||
+  payload.stop?.to?.city ||
+  ticket?.destination?.to ||
+  "";
+
+const ensureBookingExternalId = async (booking) => {
+  if (booking && !booking.external_id) {
+    await booking.save();
+  }
+  return booking;
+};
+
 const escapeRegex = (value) =>
   value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -137,6 +154,7 @@ const buildOperatorBookingsQuery = (operatorId, searchValue = "") => {
 
   const regex = new RegExp(escapeRegex(search), "i");
   const searchableFields = [
+    "external_id",
     "appwrite_user_id",
     "passengers.full_name",
     "passengers.email",
@@ -267,6 +285,7 @@ module.exports = {
           travel_flex: req.body.travel_flex,
           can_cancel_booking_until: can_cancel_until,
           can_edit_booking_until: can_edit_until,
+          destination_country: getDestinationCountry(req.body, ticket),
           deposited_money: {
             used: req.body.is_using_deposited_money,
             amount_in_cents: req.body.deposit_spent
@@ -581,6 +600,7 @@ module.exports = {
       if (!booking) {
         return bad_request(res, "Booking not found", null);
       }
+      await ensureBookingExternalId(booking);
 
       const ticketUrl = await generateSingleETicket(booking);
       booking.metadata.download_url = ticketUrl.fileUrl;
@@ -603,17 +623,14 @@ module.exports = {
         { path: "operator", select: "name" },
         { path: "agency", select: "name company_metadata" },
       ]);
-      console.log({ metadje: booking.metadata });
-      if (booking.metadata.download_url) {
-        return res.status(200).json({ data: booking.metadata.download_url, message: "Mobile eticket file url" });
-      }
-
       if (!booking) {
         return bad_request(res, "Booking not found", null);
       }
+      const alreadyHadExternalId = !!booking.external_id;
+      await ensureBookingExternalId(booking);
 
-      if (booking.metadata.download_url) {
-        return res.status(200).json({ data: ticketUrl.fileUrl, message: "Mobile eticket file url" });
+      if (alreadyHadExternalId && booking.metadata.download_url) {
+        return res.status(200).json({ data: booking.metadata.download_url, message: "Mobile eticket file url" });
       }
 
       const ticketUrl = await generateSingleETicket(booking);
@@ -775,6 +792,7 @@ module.exports = {
         arrival_station_label,
         from_city,
         to_city,
+        to_country,
         is_paid,
         internal_comment,
         ticket_comment,
@@ -942,6 +960,10 @@ module.exports = {
           open_return: isOpenReturn,
           internal_comment: String(internal_comment || "").trim(),
           ticket_comment: String(ticket_comment || "").trim(),
+          destination_country: getDestinationCountry(
+            { to_city, to_country, arrival_station_label },
+            ticket,
+          ),
         },
       });
 
@@ -979,6 +1001,14 @@ module.exports = {
             message: "Manual return booking from dashboard",
             internal_comment: String(internal_comment || "").trim(),
             ticket_comment: String(ticket_comment || "").trim(),
+            destination_country: getDestinationCountry(
+              {
+                to_city: return_journey.to_city,
+                to_country: return_journey.to_country,
+                arrival_station_label: return_journey.arrival_station_label,
+              },
+              returnTicket,
+            ),
           },
         });
 
@@ -1146,6 +1176,10 @@ module.exports = {
           internal_comment:
             outboundBooking.metadata?.internal_comment || "",
           ticket_comment: outboundBooking.metadata?.ticket_comment || "",
+          destination_country: getDestinationCountry(
+            { to_city, to_country: req.body.to_country, arrival_station_label },
+            returnTicket,
+          ),
         },
       });
 
@@ -1238,7 +1272,8 @@ module.exports = {
         location: location || null,
         metadata: {
           travel_flex: "NO_FLEX",
-          message: "Agency booking"
+          message: "Agency booking",
+          destination_country: getDestinationCountry(req.body, ticket),
         },
       });
 
@@ -1280,6 +1315,7 @@ module.exports = {
         { path: "agency", select: "name company_metadata" },
       ]);
 
+      await ensureBookingExternalId(booking);
       await sendBookingConfirmationEmailWithAttachment(booking, req.body.language);
 
       if (booking.operator) {

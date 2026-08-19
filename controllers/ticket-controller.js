@@ -1090,7 +1090,8 @@ module.exports = {
           const ticketQuery = {
             departure_date: { $gte: startDate, $lte: endDate },
             route_number: line_id,
-            operator: req.query.operator_id
+            operator: req.query.operator_id,
+            is_active: true
           };
 
           const ticketsForLine = await Ticket.find(ticketQuery)
@@ -1103,7 +1104,9 @@ module.exports = {
             })
             .sort({ departure_date: 'asc' });
 
-          const ticketsForLineWithBookings = ticketsForLine.map((ticket) => {
+          const ticketsForLineWithBookings = ticketsForLine
+          .filter((ticket) => ticket.route_number?.is_active !== false)
+          .map((ticket) => {
             const ticketObject = ticket.toObject();
             const bookingsForTicket = allBookings.filter(
               (booking) => booking.ticket.toString() === ticket._id.toString()
@@ -1118,7 +1121,7 @@ module.exports = {
         }
       }
 
-      ticketsWithBookings.sort((a, b) => new Date(a.ticket.date) - new Date(b.ticket.date));
+      ticketsWithBookings.sort((a, b) => new Date(a.ticket.departure_date) - new Date(b.ticket.departure_date));
       ok(res, "Capacity data", ticketsWithBookings)
     } catch (error) {
       server_error(res, error.message || error.response.message, null);

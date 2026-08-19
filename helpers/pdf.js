@@ -51,9 +51,13 @@ const getAgencyLogoHtml = (booking) => {
     `;
 };
 
+const getPublicBookingId = (booking) =>
+    booking?.external_id || booking?._id?.toString() || '';
+
 const generateETicket = async (booking, language = 'en') => {
     const t = generateETicketTranslations[language] || generateETicketTranslations.en;
 
+    const publicBookingId = getPublicBookingId(booking);
     const qrCodeData = `https://www.gobusly.com/authorize-booking?id=${booking?._id?.toString()}`;
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData);
     const formattedDepartureDate = moment.utc(booking?.departure_date).format('dddd, DD MMM YYYY');
@@ -140,7 +144,7 @@ const generateETicket = async (booking, language = 'en') => {
                         <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
                         ${agencyLogoHtml}
                     </div>
-                    <div class="booking-id">${t.bookingId} ${booking?._id?.toString()}</div>
+                    <div class="booking-id">${t.bookingId} ${publicBookingId}</div>
                 </div>
                 <div class="main-content">
                     <div class="left-column">
@@ -301,6 +305,7 @@ const generateETicket = async (booking, language = 'en') => {
 
 
 const generateSingleETicket = async (booking) => {
+    const publicBookingId = getPublicBookingId(booking);
     const qrCodeData = `https://www.idotours.com.mk/authorize-booking?id=${booking?._id?.toString()}`;
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData);
     console.log({ qrCodeDataUrl });
@@ -632,7 +637,7 @@ const generateSingleETicket = async (booking) => {
                     <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
                     ${agencyLogoHtml}
                 </div>
-                <div class="booking-id">Booking ID: ${booking?._id?.toString()}</div>
+                <div class="booking-id">Booking ID: ${publicBookingId}</div>
             </div>
             
             <div class="main-content">
