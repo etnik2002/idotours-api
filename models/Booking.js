@@ -191,6 +191,14 @@ const bookingSchema = mongoose.Schema({
         internal_comment: { type: String, trim: true },
         ticket_comment: { type: String, trim: true },
         destination_country: { type: String, trim: true },
+        price_currency: {
+            type: String,
+            enum: ["EUR", "CHF"],
+            default: "EUR",
+        },
+        exchange_rates: {
+            chf_to_mkd: Number,
+        },
     },
     
     

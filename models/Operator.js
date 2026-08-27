@@ -90,6 +90,9 @@ const operatorSchema = mongoose.Schema({
         native_currency: {
             type: String
         },
+        exchange_rates: {
+            chf_to_mkd: { type: Number },
+        },
         gobusly_percentage_fee: { type: Number },
     },
     averageRating: {

@@ -286,6 +286,8 @@ module.exports = {
           can_cancel_booking_until: can_cancel_until,
           can_edit_booking_until: can_edit_until,
           destination_country: getDestinationCountry(req.body, ticket),
+          price_currency: req.body.price_currency || ticket.metadata?.price_currency || "EUR",
+          exchange_rates: req.body.exchange_rates || ticket.metadata?.exchange_rates,
           deposited_money: {
             used: req.body.is_using_deposited_money,
             amount_in_cents: req.body.deposit_spent
@@ -964,6 +966,8 @@ module.exports = {
             { to_city, to_country, arrival_station_label },
             ticket,
           ),
+          price_currency: req.body.price_currency || ticket.metadata?.price_currency || "EUR",
+          exchange_rates: req.body.exchange_rates || ticket.metadata?.exchange_rates,
         },
       });
 
@@ -1009,6 +1013,8 @@ module.exports = {
               },
               returnTicket,
             ),
+            price_currency: return_journey.price_currency || returnTicket.metadata?.price_currency || "EUR",
+            exchange_rates: return_journey.exchange_rates || returnTicket.metadata?.exchange_rates,
           },
         });
 
@@ -1180,6 +1186,8 @@ module.exports = {
             { to_city, to_country: req.body.to_country, arrival_station_label },
             returnTicket,
           ),
+          price_currency: req.body.price_currency || returnTicket.metadata?.price_currency || "EUR",
+          exchange_rates: req.body.exchange_rates || returnTicket.metadata?.exchange_rates,
         },
       });
 
@@ -1274,6 +1282,8 @@ module.exports = {
           travel_flex: "NO_FLEX",
           message: "Agency booking",
           destination_country: getDestinationCountry(req.body, ticket),
+          price_currency: req.body.price_currency || ticket.metadata?.price_currency || "EUR",
+          exchange_rates: req.body.exchange_rates || ticket.metadata?.exchange_rates,
         },
       });
 

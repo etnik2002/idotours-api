@@ -2,6 +2,7 @@ const { ok, server_error, created, error_404, bad_request, unauthorized } = requ
 const { removePassword, getRandomInt } = require("../functions/security");
 const Agency = require("../models/Agency");
 const Booking = require("../models/Booking");
+const AgencyDailyReport = require("../models/AgencyDailyReport");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const { users } = require("../appwrite/appwrite.config");
@@ -459,5 +460,109 @@ module.exports = {
     } catch (error) {
       server_error(res, error.message || error, null);
     }
-  }
+  },
+
+  closeAgencyDayReport: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const timezone = req.body?.timezone || "Europe/Skopje";
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return bad_request(res, "Invalid agency id", null);
+      }
+
+      const agency = await Agency.findById(id).select(
+        "name email company_metadata financial_data",
+      );
+      if (!agency) {
+        return error_404(res, "Agency not found", null);
+      }
+
+      const now = moment.tz(timezone);
+      const reportDate = now.format("YYYY-MM-DD");
+      const startAt = now.clone().startOf("day").toDate();
+      const endAt = now.clone().endOf("day").toDate();
+
+      const bookings = await Booking.find({
+        agency: id,
+        is_paid: { $in: [true, "true"] },
+        createdAt: { $gte: startAt, $lte: endAt },
+      })
+        .sort({ createdAt: 1 })
+        .select(
+          "external_id route ticket labels departure_date passengers price metadata createdAt",
+        );
+
+      const totalsMap = new Map();
+      const bookingSnapshots = bookings.map((booking) => {
+        const currency = booking.metadata?.price_currency || "EUR";
+        const passengerCount = booking.passengers?.length || 0;
+        const price = Number(booking.price || 0);
+        const current = totalsMap.get(currency) || {
+          currency,
+          total: 0,
+          booking_count: 0,
+          passenger_count: 0,
+        };
+
+        current.total += price;
+        current.booking_count += 1;
+        current.passenger_count += passengerCount;
+        totalsMap.set(currency, current);
+
+        return {
+          booking: booking._id,
+          external_id: booking.external_id,
+          route: booking.route,
+          ticket: booking.ticket,
+          from_city: booking.labels?.from_city,
+          to_city: booking.labels?.to_city,
+          departure_date: booking.departure_date,
+          sold_at: booking.createdAt,
+          passenger_count: passengerCount,
+          price,
+          currency,
+          passengers: (booking.passengers || []).map((passenger) => ({
+            full_name: passenger.full_name,
+            phone: passenger.phone,
+            email: passenger.email,
+            price: passenger.price,
+          })),
+        };
+      });
+
+      const report = await AgencyDailyReport.findOneAndUpdate(
+        { agency: id, report_date: reportDate },
+        {
+          $set: {
+            agency: id,
+            report_date: reportDate,
+            timezone,
+            start_at: startAt,
+            end_at: endAt,
+            booking_count: bookings.length,
+            passenger_count: bookingSnapshots.reduce(
+              (sum, booking) => sum + (booking.passenger_count || 0),
+              0,
+            ),
+            totals_by_currency: Array.from(totalsMap.values()),
+            bookings: bookingSnapshots,
+          },
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true },
+      );
+
+      ok(res, "Agency day closed", {
+        report,
+        agency: {
+          _id: agency._id,
+          name: agency.name,
+          email: agency.email,
+          company_metadata: agency.company_metadata,
+        },
+      });
+    } catch (error) {
+      server_error(res, error.message || error, null);
+    }
+  },
 };

@@ -55,10 +55,49 @@ function createHalkbankHash(params, storeKey) {
         .digest("base64");
 }
 
-function getHalkbankAmountInMkd(amountInEur) {
+function getHalkbankAmountInMkd(amount, currency = "EUR", rates = {}) {
+    const normalizedCurrency = String(currency || "EUR").toUpperCase();
+
+    if (normalizedCurrency === "CHF") {
+        const chfRate = Number(rates.chf_to_mkd);
+        if (!Number.isFinite(chfRate) || chfRate <= 0) {
+            throw new Error("CHF to MKD exchange rate is not configured");
+        }
+        return Number((amount * chfRate).toFixed(2));
+    }
+
     const rate = Number(process.env.HALKBANK_EUR_TO_MKD_RATE || DEFAULT_EUR_TO_MKD_RATE);
     const normalizedRate = Number.isFinite(rate) && rate > 0 ? rate : DEFAULT_EUR_TO_MKD_RATE;
-    return Number((amountInEur * normalizedRate).toFixed(2));
+    return Number((amount * normalizedRate).toFixed(2));
+}
+
+function getHalkbankPaymentBreakdown(bookingRequests) {
+    const breakdown = bookingRequests.map((bookingRequest) => {
+        const body = bookingRequest.body || {};
+        const amount = Number(body.total_price);
+        const currency = String(body.price_currency || "EUR").toUpperCase();
+        const rates = body.exchange_rates || {};
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+            throw new Error("Booking request has an invalid total price");
+        }
+
+        return {
+            amount: Number(amount.toFixed(2)),
+            currency,
+            exchangeRate: currency === "CHF"
+                ? Number(rates.chf_to_mkd)
+                : Number(process.env.HALKBANK_EUR_TO_MKD_RATE || DEFAULT_EUR_TO_MKD_RATE),
+            halkbankAmountMkd: getHalkbankAmountInMkd(amount, currency, rates),
+        };
+    });
+
+    return {
+        breakdown,
+        halkbankAmount: Number(
+            breakdown.reduce((sum, item) => sum + item.halkbankAmountMkd, 0).toFixed(2),
+        ),
+    };
 }
 
 function verifyHalkbankCallbackHash(body, storeKey) {
@@ -145,7 +184,7 @@ module.exports = {
             const orderId = `HB${Date.now()}${crypto.randomBytes(4).toString("hex")}`;
             const rnd = crypto.randomBytes(10).toString("hex");
             const callbackUrl = `${getPublicApiUrl(req)}/payment/halkbank/callback`;
-            const halkbankAmount = getHalkbankAmountInMkd(normalizedAmount);
+            const { breakdown, halkbankAmount } = getHalkbankPaymentBreakdown(bookingRequests);
 
             await PendingPayment.create({
                 orderId,
@@ -155,9 +194,9 @@ module.exports = {
                 bookingRequests,
                 bookingSummaries,
                 bankResponse: {
-                    originalAmountEur: Number(normalizedAmount.toFixed(2)),
+                    originalAmount: Number(normalizedAmount.toFixed(2)),
                     halkbankAmountMkd: halkbankAmount,
-                    exchangeRate: Number(process.env.HALKBANK_EUR_TO_MKD_RATE || DEFAULT_EUR_TO_MKD_RATE),
+                    paymentBreakdown: breakdown,
                 },
             });
 

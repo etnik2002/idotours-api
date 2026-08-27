@@ -4,8 +4,44 @@ const Route = require("../models/Route");
 const Ticket = require("../models/Ticket");
 const Booking = require("../models/Booking");
 const Station = require("../models/Station");
+const Operator = require("../models/Operator");
 const moment = require("moment-timezone");
 const { default: mongoose } = require("mongoose");
+
+const SUPPORTED_TICKET_CURRENCIES = ["EUR", "CHF"];
+
+const normalizeTicketCurrency = (currency) =>
+  SUPPORTED_TICKET_CURRENCIES.includes(String(currency || "").toUpperCase())
+    ? String(currency).toUpperCase()
+    : "EUR";
+
+const getOperatorChfRate = async (operatorId) => {
+  if (!operatorId) return null;
+  const operator = await Operator.findById(operatorId).select("company_metadata.exchange_rates.chf_to_mkd");
+  const rate = Number(operator?.company_metadata?.exchange_rates?.chf_to_mkd);
+  return Number.isFinite(rate) && rate > 0 ? rate : null;
+};
+
+const buildTicketMetadata = async (metadata = {}, operatorId) => {
+  const priceCurrency = normalizeTicketCurrency(metadata.price_currency);
+  const nextMetadata = {
+    ...metadata,
+    price_currency: priceCurrency,
+  };
+
+  if (priceCurrency === "CHF") {
+    const chfRate = await getOperatorChfRate(operatorId);
+    if (!chfRate) {
+      throw new Error("CHF to MKD rate must be configured in settings before creating CHF tickets");
+    }
+    nextMetadata.exchange_rates = {
+      ...metadata.exchange_rates,
+      chf_to_mkd: chfRate,
+    };
+  }
+
+  return nextMetadata;
+};
 
 const parseDurationToMilliseconds = (duration) => {
   const [hours = "0", minutes = "0"] = String(duration || "00:00").split(":");
@@ -61,12 +97,13 @@ module.exports = {
   createTickets: async (req, res) => {
     try {
       const { route_number, destination, time, stops, number_of_tickets, metadata, days_of_week, weeks_to_generate } = req.body;
+      const ticketMetadata = await buildTicketMetadata(metadata, req.params.operation_id);
       const ticket_data = {
         route_number,
         time,
         destination,
         stops,
-        metadata,
+        metadata: ticketMetadata,
         number_of_tickets: number_of_tickets || 13,
         operator: req.params.operation_id,
       };
@@ -78,7 +115,10 @@ module.exports = {
 
       return res.status(201).json({ message: "Ticket created successfully" });
     } catch (error) {
-      return res.status(500).json(error);
+      if (String(error.message || "").includes("CHF to MKD rate")) {
+        return res.status(400).json({ message: error.message });
+      }
+      return res.status(500).json({ message: error.message || "Error while creating tickets" });
     }
   },
 
@@ -131,136 +171,75 @@ module.exports = {
       const children = Number(req.query.children);
       const passengers_amount = adults + children;
 
-      const maxDatesToReturn = 5;
-      const maxDaysToLookAhead = 30;
+      const requestedMaxDates = Number(req.query.maxDates);
+      const requestedMaxDays = Number(req.query.maxDays);
+      const maxDatesToReturn =
+        Number.isFinite(requestedMaxDates) && requestedMaxDates > 0
+          ? Math.min(requestedMaxDates, 366)
+          : 5;
+      const maxDaysToLookAhead =
+        Number.isFinite(requestedMaxDays) && requestedMaxDays > 0
+          ? Math.min(requestedMaxDays, 366)
+          : 30;
 
       const departureStationIds = departureStations.map(id => new mongoose.Types.ObjectId(id));
       const arrivalStationIds = arrivalStations.map(id => new mongoose.Types.ObjectId(id));
 
-      let availableDates = [];
-      let daysChecked = 0;
+      const startDate = moment(currentDate).add(1, 'days').startOf('day').toDate();
+      const endDate = moment(currentDate).add(maxDaysToLookAhead, 'days').endOf('day').toDate();
 
-      while (availableDates.length < maxDatesToReturn && daysChecked < maxDaysToLookAhead) {
-        daysChecked++;
-
-        const checkDate = moment(currentDate).add(daysChecked, 'days');
-        const startOfDay = moment(checkDate).startOf('day').toDate();
-        const endOfDay = moment(checkDate).endOf('day').toDate();
-
-        const pipeline = [
-          {
-            $match: {
-              departure_date: {
-                $gte: startOfDay,
-                $lte: endOfDay
-              },
-              number_of_tickets: { $gte: passengers_amount },
-              is_active: true
-            }
-          },
-          {
-            $addFields: {
-              relevantStops: {
-                $filter: {
-                  input: "$stops",
-                  as: "stop",
-                  cond: {
-                    $and: [
-                      { $in: ["$$stop.from", departureStationIds] },
-                      { $in: ["$$stop.to", arrivalStationIds] }
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          {
-            $match: {
-              "relevantStops.0": { $exists: true }
-            }
-          },
-          {
-            $limit: 1
+      const pipeline = [
+        {
+          $match: {
+            departure_date: {
+              $gte: startDate,
+              $lte: endDate
+            },
+            number_of_tickets: { $gte: passengers_amount },
+            is_active: true
           }
-        ];
-
-        const ticketExists = await Ticket.aggregate(pipeline);
-
-        if (ticketExists.length > 0) {
-          availableDates.push(checkDate.format('DD-MM-YYYY'));
-        }
-      }
-
-      if (availableDates.length === 0 && daysChecked < maxDaysToLookAhead) {
-        const batchSize = 1;
-        let batchStart = daysChecked + 1;
-
-        while (availableDates.length === 0 && batchStart < maxDaysToLookAhead) {
-          const batchEnd = Math.min(batchStart + batchSize - 1, maxDaysToLookAhead);
-
-          const startDate = moment(currentDate).add(batchStart, 'days').startOf('day').toDate();
-          const endDate = moment(currentDate).add(batchEnd, 'days').endOf('day').toDate();
-
-          const pipeline = [
-            {
-              $match: {
-                departure_date: {
-                  $gte: startDate,
-                  $lte: endDate
-                },
-                number_of_tickets: { $gte: passengers_amount },
-                is_active: true
-              }
-            },
-            {
-              $addFields: {
-                relevantStops: {
-                  $filter: {
-                    input: "$stops",
-                    as: "stop",
-                    cond: {
-                      $and: [
-                        { $in: ["$$stop.from", departureStationIds] },
-                        { $in: ["$$stop.to", arrivalStationIds] }
-                      ]
-                    }
-                  }
+        },
+        {
+          $addFields: {
+            relevantStops: {
+              $filter: {
+                input: "$stops",
+                as: "stop",
+                cond: {
+                  $and: [
+                    { $in: ["$$stop.from", departureStationIds] },
+                    { $in: ["$$stop.to", arrivalStationIds] }
+                  ]
                 }
               }
-            },
-            {
-              $match: {
-                "relevantStops.0": { $exists: true }
-              }
-            },
-            {
-              $group: {
-                _id: {
-                  $dateToString: {
-                    format: "%d-%m-%Y",
-                    date: "$departure_date"
-                  }
-                }
-              }
-            },
-            {
-              $sort: { _id: 1 }
-            },
-            {
-              $limit: maxDatesToReturn - availableDates.length
             }
-          ];
-
-          const batchResults = await Ticket.aggregate(pipeline);
-          if (batchResults.length > 0) {
-            batchResults.forEach(result => {
-              availableDates.push(result._id);
-            });
           }
-
-          batchStart = batchEnd + 1;
+        },
+        {
+          $match: {
+            "relevantStops.0": { $exists: true }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: {
+                format: "%d-%m-%Y",
+                date: "$departure_date"
+              }
+            },
+            first_departure_date: { $min: "$departure_date" }
+          }
+        },
+        {
+          $sort: { first_departure_date: 1 }
+        },
+        {
+          $limit: maxDatesToReturn
         }
-      }
+      ];
+
+      const availableDates = (await Ticket.aggregate(pipeline)).map(result => result._id);
 
       return ok(res, "Available dates found", { availableDates: availableDates });
     } catch (error) {
@@ -1243,14 +1222,55 @@ module.exports = {
       const updateData = req.body;
 
       const currentDate = new Date();
+      const selectedDaysOfWeek = Array.isArray(updateData.days_of_week)
+        ? updateData.days_of_week
+          .map(Number)
+          .filter((day) => Number.isInteger(day) && day >= 1 && day <= 7)
+        : [];
 
-      const futureTickets = await Ticket.find({
+      const allFutureTickets = await Ticket.find({
         route_number: route_number,
         departure_date: { $gte: currentDate }
       }).sort({ departure_date: 1 });
 
+      const futureTickets = selectedDaysOfWeek.length
+        ? allFutureTickets.filter((ticket) =>
+          selectedDaysOfWeek.includes(new Date(ticket.departure_date).getUTCDay() + 1) ||
+          ticket.stops?.some((stop) => selectedDaysOfWeek.includes(Number(stop.days_of_week)))
+        )
+        : allFutureTickets;
+
       if (futureTickets.length === 0) {
-        return res.status(404).json({ message: "No future tickets found for this route" });
+        const route = await Route.findById(route_number).select("operator");
+        if (!route) {
+          return res.status(404).json({ message: "Route not found" });
+        }
+
+        const metadata = await buildTicketMetadata(
+          updateData.metadata,
+          route.operator,
+        );
+        const ticket_data = {
+          route_number,
+          time: updateData.time,
+          destination: updateData.destination,
+          stops: updateData.stops,
+          metadata,
+          number_of_tickets: updateData.number_of_tickets || 13,
+          operator: route.operator,
+        };
+
+        const generatedTickets = await generateTickets(
+          ticket_data,
+          selectedDaysOfWeek,
+          updateData.weeks_to_generate || 1,
+          false,
+        );
+
+        return res.status(201).json({
+          message: "No future tickets matched the selected days, so new tickets were created",
+          created_count: generatedTickets.length,
+        });
       }
 
       const updateFields = {};
@@ -1268,7 +1288,10 @@ module.exports = {
       }
 
       if (updateData.metadata) {
-        updateFields.metadata = updateData.metadata;
+        updateFields.metadata = await buildTicketMetadata(
+          updateData.metadata,
+          futureTickets[0]?.operator,
+        );
       }
 
       if (updateData.stops && Array.isArray(updateData.stops)) {
@@ -1371,6 +1394,9 @@ module.exports = {
       });
 
     } catch (error) {
+      if (String(error.message || "").includes("CHF to MKD rate")) {
+        return res.status(400).json({ error: error.message });
+      }
       return res.status(500).json({ error: error.message });
     }
   },

@@ -104,6 +104,16 @@ const ticketSchema = mongoose.Schema({
       type: Boolean,
       default: false,
     },
+    price_currency: {
+      type: String,
+      enum: ["EUR", "CHF"],
+      default: "EUR",
+    },
+    exchange_rates: {
+      chf_to_mkd: {
+        type: Number,
+      },
+    },
 
   },
 }, { timestamps: true });

@@ -46,7 +46,7 @@ const getAgencyLogoHtml = (booking) => {
 
     return `
         <div class="agency-logo-wrap">
-            <img src="${escapeAttribute(logoUrl)}" alt="${escapeAttribute(agencyName)} logo" class="logo agency-logo">
+            <img src="${escapeAttribute(logoUrl)}" alt="${escapeAttribute(agencyName)} logo" class="agency-logo">
         </div>
     `;
 };
@@ -96,12 +96,12 @@ const generateETicket = async (booking, language = 'en') => {
                 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
                 body { background-color: #ffffff; color: #1e293b; line-height: 1.5; }
                 .container { max-width: 800px; margin: 0 auto; background: white; border: 1px solid #dbeafe; border-radius: 0.5rem; overflow: hidden; }
-                .header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dbeafe; }
-                .brand-logos { display: flex; align-items: center; gap: 1rem; }
+                .header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #dbeafe; }
+                .brand-main { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
                 .logo { width: 120px; height: 60px; object-fit: contain; }
-                .agency-logo-wrap { padding-left: 1rem; border-left: 1px solid #dbeafe; }
-                .agency-logo { max-width: 120px; }
-                .booking-id { font-size: 0.875rem; color: #64748b; }
+                .agency-logo-wrap { margin-left: auto; display: flex; justify-content: flex-end; align-items: flex-start; min-width: 180px; }
+                .agency-logo { width: 170px; height: 82px; object-fit: contain; object-position: right top; }
+                .booking-id { font-size: 0.875rem; color: #64748b; text-align: center; }
                 .main-content { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #dbeafe; }
                 .left-column, .right-column { padding: 1.5rem; }
                 .left-column { border-right: 1px dashed #dbeafe; }
@@ -140,11 +140,11 @@ const generateETicket = async (booking, language = 'en') => {
         <body>
             <div class="container">
                 <div class="header">
-                    <div class="brand-logos">
+                    <div class="brand-main">
                         <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
-                        ${agencyLogoHtml}
+                        <div class="booking-id">${t.bookingId} ${publicBookingId}</div>
                     </div>
-                    <div class="booking-id">${t.bookingId} ${publicBookingId}</div>
+                    ${agencyLogoHtml}
                 </div>
                 <div class="main-content">
                     <div class="left-column">
@@ -387,14 +387,15 @@ const generateSingleETicket = async (booking) => {
                 padding: 1.5rem;
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
                 border-bottom: 1px solid #dbeafe;
             }
 
-            .brand-logos {
+            .brand-main {
                 display: flex;
+                flex-direction: column;
                 align-items: center;
-                gap: 1rem;
+                gap: 0.35rem;
             }
             
             .logo {
@@ -404,17 +405,24 @@ const generateSingleETicket = async (booking) => {
             }
 
             .agency-logo-wrap {
-                padding-left: 1rem;
-                border-left: 1px solid #dbeafe;
+                margin-left: auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: flex-start;
+                min-width: 180px;
             }
 
             .agency-logo {
-                max-width: 120px;
+                width: 170px;
+                height: 82px;
+                object-fit: contain;
+                object-position: right top;
             }
             
             .booking-id {
                 font-size: 0.875rem;
                 color: #64748b;
+                text-align: center;
             }
             
             .main-content {
@@ -633,11 +641,11 @@ const generateSingleETicket = async (booking) => {
     <body>
         <div class="container">
             <div class="header">
-                <div class="brand-logos">
+                <div class="brand-main">
                     <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
-                    ${agencyLogoHtml}
+                    <div class="booking-id">Booking ID: ${publicBookingId}</div>
                 </div>
-                <div class="booking-id">Booking ID: ${publicBookingId}</div>
+                ${agencyLogoHtml}
             </div>
             
             <div class="main-content">

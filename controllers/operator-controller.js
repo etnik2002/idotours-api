@@ -173,25 +173,43 @@ module.exports = {
   edit: async (req, res) => {
     try {
       const operator = await Operator.findById(req.params.id);
-
-      const { name, email, max_child_age, allow_portal_notifications, company_name, company_email, company_phone, company_tax_number, company_registration_number, country } = req.body;
-
-      const payload = {
-        ...operator,
-        name: name || operator.name,
-        email: email || operator.email,
-        max_child_age: max_child_age || operator.max_child_age,
-        "notification_permissions.allow_portal_notifications": allow_portal_notifications || operator.notification_permissions.allow_portal_notifications,
-        "company_metadata.name": company_name || operator.company_metadata.name,
-        "company_metadata.email": email || operator.company_metadata.email,
-        "company_metadata.phone": company_phone || operator.company_metadata.phone,
-        "company_metadata.tax_number": company_tax_number || operator.company_metadata.tax_number,
-        "company_metadata.registration_number": company_registration_number || operator.company_metadata.registration_number,
-        "company_metadata.country": country || operator.company_metadata.country,
+      if (!operator) {
+        return res.status(404).json({ message: "Operator not found", data: null });
       }
 
-      await Operator.findByIdAndUpdate(req.params.id, payload._doc);
-      return res.status(201).json({ message: "Updated", data: null })
+      const { name, email, max_child_age, allow_portal_notifications, company_name, company_email, company_phone, company_tax_number, company_registration_number, country, chf_to_mkd_rate } = req.body;
+      const update = {};
+
+      if (name !== undefined) update.name = name;
+      if (email !== undefined) update.email = email;
+      if (max_child_age !== undefined) update.max_child_age = max_child_age;
+      if (allow_portal_notifications !== undefined) {
+        update["notification_permissions.allow_portal_notifications"] = allow_portal_notifications;
+      }
+      if (company_name !== undefined) update["company_metadata.name"] = company_name;
+      if (company_email !== undefined) update["company_metadata.email"] = company_email;
+      if (company_phone !== undefined) update["company_metadata.phone"] = company_phone;
+      if (company_tax_number !== undefined) update["company_metadata.tax_number"] = company_tax_number;
+      if (company_registration_number !== undefined) {
+        update["company_metadata.registration_number"] = company_registration_number;
+      }
+      if (country !== undefined) update["company_metadata.country"] = country;
+
+      if (chf_to_mkd_rate !== undefined) {
+        const rate = Number(chf_to_mkd_rate);
+        if (!Number.isFinite(rate) || rate <= 0) {
+          return res.status(400).json({ message: "Please provide a valid CHF to MKD rate", data: null });
+        }
+        update["company_metadata.exchange_rates.chf_to_mkd"] = rate;
+      }
+
+      const updatedOperator = await Operator.findByIdAndUpdate(
+        req.params.id,
+        { $set: update },
+        { new: true }
+      ).select("-password");
+
+      return res.status(201).json({ message: "Updated", data: updatedOperator })
     } catch (error) {
       server_error(res, error || error.response.message, null);
     }
