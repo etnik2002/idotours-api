@@ -285,17 +285,34 @@ const generateETicket = async (booking, language = 'en') => {
             const pdfBuffer = await htmlToPdf.generatePdf(file, options);
             const fileId = `ticket_passenger_${i + 1}_${Date.now()}`;
             const fileName = `${fileId}.pdf`;
-            const inputFile = InputFile.fromBuffer(pdfBuffer, fileName);
-            const result = await storage.createFile("6776d4b70037ef9e499f", fileId, inputFile);
-            const retrievedFile = await storage.getFileDownload('6776d4b70037ef9e499f', fileId);
+            let ticketBuffer = pdfBuffer;
+
+            try {
+                const inputFile = InputFile.fromBuffer(pdfBuffer, fileName);
+                await storage.createFile("6776d4b70037ef9e499f", fileId, inputFile);
+                const retrievedFile = await storage.getFileDownload('6776d4b70037ef9e499f', fileId);
+                ticketBuffer = Buffer.from(retrievedFile);
+            } catch (storageError) {
+                console.warn("Failed to store e-ticket PDF; using generated PDF buffer", {
+                    bookingId: publicBookingId,
+                    passengerIndex: i + 1,
+                    error: storageError?.message || storageError
+                });
+            }
 
             results.push({
                 passengerIndex: i + 1,
                 passengerName: passenger.full_name,
-                retrievedFile: Buffer.from(retrievedFile),
-                fileName: `e-ticket-passenger-${i + 1}-${passenger.full_name.replace(/\s+/g, '-')}.pdf`
+                retrievedFile: Buffer.from(ticketBuffer),
+                fileName: `e-ticket-passenger-${i + 1}-${String(passenger.full_name || 'passenger').replace(/\s+/g, '-')}.pdf`
             });
         } catch (error) {
+            console.error("Failed to generate e-ticket PDF", {
+                bookingId: publicBookingId,
+                passengerIndex: i + 1,
+                passengerName: passenger.full_name,
+                error: error?.message || error
+            });
         }
     }
 

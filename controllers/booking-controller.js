@@ -1318,23 +1318,42 @@ module.exports = {
 
   generateETicketForMobileAPI: async (req, res) => {
     try {
-      console.log("|zjarrrr");
-
       const booking = await Booking.findById(req.params.booking_id).populate([
         { path: "operator" },
         { path: "agency", select: "name company_metadata" },
       ]);
 
-      await ensureBookingExternalId(booking);
-      await sendBookingConfirmationEmailWithAttachment(booking, req.body.language);
-
-      if (booking.operator) {
-        await sendOperatorBookingNotification(booking, booking.operator);
+      if (!booking) {
+        return error_404(res, "No booking found.", null);
       }
 
-      return res.status(200).json({ data: null, message: "E-Ticket generated successfully" })
+      await ensureBookingExternalId(booking);
+      const passengerEmailResult = await sendBookingConfirmationEmailWithAttachment(booking, req.body.language);
+      let operatorEmailResult = null;
+
+      if (booking.operator) {
+        operatorEmailResult = await sendOperatorBookingNotification(booking, booking.operator);
+      }
+
+      if (!passengerEmailResult?.success) {
+        return res.status(500).json({
+          data: {
+            passengerEmail: passengerEmailResult,
+            operatorEmail: operatorEmailResult,
+          },
+          message: "E-ticket generated but passenger email was not sent"
+        });
+      }
+
+      return res.status(200).json({
+        data: {
+          passengerEmail: passengerEmailResult,
+          operatorEmail: operatorEmailResult,
+        },
+        message: "E-ticket email sent successfully"
+      })
     } catch (error) {
-      server_error(res, "", null);
+      server_error(res, error.message, null);
     }
   }
 

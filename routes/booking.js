@@ -54,6 +54,7 @@ router.post("/cancel-and-refund/:booking_id/:payment_intent_id", verifyBookingFl
 
 router.post("/reschedule/:id", verifyBookingFlex, rescheduleBooking);
 
+router.post("/generate-e-ticket/:booking_id", generateETicketForMobileAPI)
 router.post("/gererate-e-ticket/:booking_id", generateETicketForMobileAPI)
 
 module.exports = router;

@@ -18,6 +18,16 @@ const transporter = nodemailer.createTransport({
 const getPublicBookingId = (booking) =>
   booking?.external_id || booking?._id?.toString() || '';
 
+const getPassengerEmailRecipients = (booking) => {
+  const emails = booking?.passengers
+    ?.map((passenger) => passenger?.email)
+    .filter(Boolean)
+    .map((email) => String(email).trim())
+    .filter(Boolean) || [];
+
+  return [...new Set(emails)];
+};
+
 
 const sendBookingConfirmationEmail = async (booking, operator) => {
   try {
@@ -158,28 +168,29 @@ const sendBookingReceiptEmail = async (receipt_url, passengerEmail, language) =>
 
 const sendBookingConfirmationEmailWithAttachment = async (booking, language = 'en') => {
   try {
-    console.log({ booking });
-
-    if (!booking.passengers || booking.passengers.length === 0) {
-      return;
+    if (!booking?.passengers || booking.passengers.length === 0) {
+      return { success: false, reason: 'no_passengers' };
     }
 
-    console.log({ psg: booking.passengers });
+    const recipients = getPassengerEmailRecipients(booking);
 
-    const emailToUse = booking.passengers.find(p => p.email)?.email;
-    console.log({ emailToUse });
-
-    if (!emailToUse) {
-      return;
+    if (recipients.length === 0) {
+      console.warn("Booking confirmation email skipped: no passenger email", {
+        bookingId: getPublicBookingId(booking),
+      });
+      return { success: false, reason: 'no_passenger_email' };
     }
 
-    const t = sendBookingConfirmationEmailWithAttachmentTranslations[language] || sendBookingConfirmationEmailWithAttachmentTranslations.en;
+    const normalizedLanguage = String(language || 'en').toLowerCase();
+    const t = sendBookingConfirmationEmailWithAttachmentTranslations[normalizedLanguage] || sendBookingConfirmationEmailWithAttachmentTranslations.en;
 
-    const passengerTickets = await generateETicket(booking, language);
-    console.log({ passengerTickets });
+    const passengerTickets = await generateETicket(booking, normalizedLanguage);
 
     if (passengerTickets.length === 0) {
-      return;
+      console.warn("Booking confirmation email will be sent without PDF attachments", {
+        bookingId: getPublicBookingId(booking),
+        recipientCount: recipients.length,
+      });
     }
 
     const attachments = passengerTickets.map(ticket => ({
@@ -190,7 +201,8 @@ const sendBookingConfirmationEmailWithAttachment = async (booking, language = 'e
 
     const mailOptions = {
       from: process.env.EMAIL_FROM,
-      to: emailToUse,
+      to: recipients[0],
+      bcc: recipients.slice(1),
       subject: interpolate(t.emailSubject, { count: booking.passengers.length }),
       html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
@@ -219,9 +231,11 @@ const sendBookingConfirmationEmailWithAttachment = async (booking, language = 'e
                   `).join('')}
               </div>
 
-              <p><strong>${t.attached}</strong> ${interpolate(t.attachmentDescription, { count: passengerTickets.length })}</p>
+              ${attachments.length > 0
+                ? `<p><strong>${t.attached}</strong> ${interpolate(t.attachmentDescription, { count: passengerTickets.length })}</p>`
+                : `<p>Your booking is confirmed. You can download your e-ticket from your booking page.</p>`}
               
-              <p>${t.ticketInstructions}</p>
+              ${attachments.length > 0 ? `<p>${t.ticketInstructions}</p>` : ''}
               
               <p>${interpolate(t.journeyWish, { operator: booking.operator?.name || t.fallbackOperator })}</p>
               
@@ -230,14 +244,32 @@ const sendBookingConfirmationEmailWithAttachment = async (booking, language = 'e
               </div>
           </div>
           `,
-      attachments: attachments
+      attachments: attachments.length > 0 ? attachments : undefined
     };
 
     const sent = await transporter.sendMail(mailOptions);
-    console.log({ sent });
+    console.log("Booking confirmation email sent", {
+      bookingId: getPublicBookingId(booking),
+      messageId: sent.messageId,
+      accepted: sent.accepted,
+      rejected: sent.rejected,
+      attachmentCount: attachments.length,
+    });
+
+    return {
+      success: true,
+      messageId: sent.messageId,
+      accepted: sent.accepted,
+      rejected: sent.rejected,
+      attachmentCount: attachments.length,
+    };
 
   } catch (error) {
-    return error;
+    console.error("Booking confirmation email failed", {
+      bookingId: getPublicBookingId(booking),
+      error: error?.message || error,
+    });
+    return { success: false, reason: 'send_failed', error: error?.message || error };
   }
 };
 

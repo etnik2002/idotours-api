@@ -1238,8 +1238,8 @@ router.get('/:contractId', async (req, res) => {
 router.post('/test-email', async (req, res) => {
   try {
     await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: process.env.SMTP_USER,
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
       subject: 'Test Email from Gobusly',
       text: 'This is a test email to verify SMTP configuration.'
     });
