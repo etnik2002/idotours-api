@@ -6,6 +6,41 @@ const { users } = require("../appwrite/appwrite.config");
 const Message = require("../models/Message");
 const { sendRegisteredOperatorEmail } = require("../helpers/email");
 const { validateIBAN } = require("../functions/banking.config");
+const DashboardUser = require("../models/DashboardUser");
+const jwt = require("jsonwebtoken");
+
+const DASHBOARD_MODULES = [
+  "dashboard", "capacity", "agencies", "sales_reports", "create_booking",
+  "bookings", "tickets", "routes", "stations", "documents", "settings",
+];
+
+const bootstrapSuperAdmin = async (email, password) => {
+  const bootstrapEmail = (process.env.DASHBOARD_SUPER_ADMIN_EMAIL || "driton@idotours.com.mk").toLowerCase();
+  const bootstrapPassword = process.env.DASHBOARD_SUPER_ADMIN_PASSWORD || "Driton007.";
+  if (email.toLowerCase() !== bootstrapEmail || password !== bootstrapPassword) return null;
+
+  const operatorId = process.env.DASHBOARD_OPERATOR_ID || process.env.HARDCODED_OPERATOR_ID;
+  const operator = operatorId ? await Operator.findById(operatorId) : await Operator.findOne({ role: "operator" }).sort({ createdAt: 1 });
+  if (!operator) throw new Error("No operator found for the dashboard super admin");
+  if (await DashboardUser.exists({ operator: operator._id, role: "super_admin" })) return null;
+
+  const hashedPassword = await bcrypt.hash(bootstrapPassword, 10);
+  return DashboardUser.findOneAndUpdate(
+    { email: bootstrapEmail },
+    {
+      $setOnInsert: {
+        name: "Driton",
+        email: bootstrapEmail,
+        password: hashedPassword,
+        operator: operator._id,
+        role: "super_admin",
+        permissions: DASHBOARD_MODULES,
+        isActive: true,
+      },
+    },
+    { new: true, upsert: true, runValidators: true },
+  );
+};
 
 module.exports = {
   createOperator: async (req, res) => {
@@ -83,10 +118,39 @@ module.exports = {
 
   login: async (req, res) => {
     try {
+      const email = String(req.body.email || "").trim().toLowerCase();
+      let dashboardUser = await DashboardUser.findOne({ email });
+      if (!dashboardUser) dashboardUser = await bootstrapSuperAdmin(email, req.body.password || "");
 
-      const operator = await Operator.findOne({ email: req.body.email });
+      if (dashboardUser) {
+        if (!dashboardUser.isActive) return unauthorized(res, "Account is disabled", null);
+        const valid = await bcrypt.compare(req.body.password || "", dashboardUser.password);
+        if (!valid) return unauthorized(res, "Invalid Password", null);
+
+        const operator = await Operator.findById(dashboardUser.operator).select("_id company_metadata");
+        if (!operator) return unauthorized(res, "Operator account not found", null);
+
+        dashboardUser.lastLoginAt = new Date();
+        await dashboardUser.save();
+        const data = {
+          _id: operator._id,
+          operatorId: operator._id,
+          accountId: dashboardUser._id,
+          name: dashboardUser.name,
+          email: dashboardUser.email,
+          role: "operator",
+          dashboardRole: dashboardUser.role,
+          permissions: dashboardUser.role === "super_admin" ? DASHBOARD_MODULES : dashboardUser.permissions,
+          isSuperAdmin: dashboardUser.role === "super_admin",
+          company_metadata: operator.company_metadata,
+        };
+        const token = jwt.sign({ data }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "7d" });
+        return ok(res, "Logged in successfully", token);
+      }
+
+      const operator = await Operator.findOne({ email });
       if (!operator) {
-        unauthorized(res, "Invalid Email", null);
+        return unauthorized(res, "Invalid Email", null);
       }
 
       const validPassword = await bcrypt.compare(
@@ -95,7 +159,7 @@ module.exports = {
       );
 
       if (!validPassword) {
-        unauthorized(res, "Invalid  Password", null);
+        return unauthorized(res, "Invalid Password", null);
       }
 
       const token = operator.generateAuthToken(operator);
@@ -212,6 +276,106 @@ module.exports = {
       return res.status(201).json({ message: "Updated", data: updatedOperator })
     } catch (error) {
       server_error(res, error || error.response.message, null);
+    }
+  },
+
+  getDashboardUsers: async (req, res) => {
+    try {
+      const users = await DashboardUser.find({ operator: req.dashboardUser.operator })
+        .select("-password")
+        .sort({ role: 1, name: 1 });
+      return ok(res, "Dashboard users", users);
+    } catch (error) {
+      return server_error(res, error.message, null);
+    }
+  },
+
+  getDashboardSession: async (req, res) => {
+    try {
+      const account = req.dashboardUser;
+      const operator = await Operator.findById(account.operator).select("_id company_metadata");
+      if (!operator) return unauthorized(res, "Operator account not found", null);
+      return ok(res, "Dashboard session", {
+        _id: operator._id,
+        operatorId: operator._id,
+        accountId: account._id,
+        name: account.name,
+        email: account.email,
+        role: "operator",
+        dashboardRole: account.role,
+        permissions: account.role === "super_admin" ? DASHBOARD_MODULES : account.permissions,
+        isSuperAdmin: account.role === "super_admin",
+        company_metadata: operator.company_metadata,
+      });
+    } catch (error) {
+      return server_error(res, error.message, null);
+    }
+  },
+
+  createDashboardUser: async (req, res) => {
+    try {
+      const { name, email, password, permissions = [], isActive = true } = req.body;
+      if (!name || !email || !password || password.length < 8) {
+        return res.status(400).json({ message: "Name, email and a password of at least 8 characters are required", data: null });
+      }
+      const normalizedEmail = email.trim().toLowerCase();
+      if (await DashboardUser.exists({ email: normalizedEmail })) {
+        return res.status(409).json({ message: "A user with this email already exists", data: null });
+      }
+      const user = await DashboardUser.create({
+        name: name.trim(),
+        email: normalizedEmail,
+        password: await bcrypt.hash(password, 10),
+        operator: req.dashboardUser.operator,
+        role: "user",
+        permissions: [...new Set(permissions)].filter((item) => DASHBOARD_MODULES.includes(item)),
+        isActive: Boolean(isActive),
+      });
+      const result = user.toObject();
+      delete result.password;
+      return created(res, "Dashboard user created", result);
+    } catch (error) {
+      return server_error(res, error.message, null);
+    }
+  },
+
+  updateDashboardUser: async (req, res) => {
+    try {
+      const user = await DashboardUser.findOne({ _id: req.params.userId, operator: req.dashboardUser.operator });
+      if (!user) return error_404(res, "Dashboard user not found", null);
+      if (user.role === "super_admin" && String(user._id) !== String(req.dashboardUser._id)) {
+        return res.status(403).json({ message: "The super admin account cannot be changed", data: null });
+      }
+      const { name, email, password, permissions, isActive } = req.body;
+      if (name !== undefined) user.name = String(name).trim();
+      if (email !== undefined) user.email = String(email).trim().toLowerCase();
+      if (password) {
+        if (password.length < 8) return res.status(400).json({ message: "Password must be at least 8 characters", data: null });
+        user.password = await bcrypt.hash(password, 10);
+      }
+      if (permissions !== undefined && user.role !== "super_admin") {
+        user.permissions = [...new Set(permissions)].filter((item) => DASHBOARD_MODULES.includes(item));
+      }
+      if (isActive !== undefined && user.role !== "super_admin") user.isActive = Boolean(isActive);
+      await user.save();
+      const result = user.toObject();
+      delete result.password;
+      return ok(res, "Dashboard user updated", result);
+    } catch (error) {
+      if (error?.code === 11000) return res.status(409).json({ message: "A user with this email already exists", data: null });
+      return server_error(res, error.message, null);
+    }
+  },
+
+  deleteDashboardUser: async (req, res) => {
+    try {
+      const user = await DashboardUser.findOne({ _id: req.params.userId, operator: req.dashboardUser.operator });
+      if (!user) return error_404(res, "Dashboard user not found", null);
+      if (user.role === "super_admin") return res.status(403).json({ message: "The super admin account cannot be deleted", data: null });
+      await user.deleteOne();
+      return ok(res, "Dashboard user deleted", null);
+    } catch (error) {
+      return server_error(res, error.message, null);
     }
   },
 

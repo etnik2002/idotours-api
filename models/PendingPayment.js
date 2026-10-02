@@ -20,6 +20,23 @@ const pendingPaymentSchema = new mongoose.Schema(
       type: String,
       default: "807",
     },
+    userId: String,
+    walletUsedInCents: {
+      type: Number,
+      default: 0,
+    },
+    walletRewardInCents: {
+      type: Number,
+      default: 0,
+    },
+    cashbackBaseEur: {
+      type: Number,
+      default: 0,
+    },
+    walletApplied: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: ["pending", "processing", "approved", "failed"],

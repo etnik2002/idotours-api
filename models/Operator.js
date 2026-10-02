@@ -106,8 +106,9 @@ const operatorSchema = mongoose.Schema({
 }, { timestamps: true })
 
 operatorSchema.methods.generateAuthToken = function (data) {
-    data.password = undefined;
-    const token = jwt.sign({ data }, process.env.ACCESS_TOKEN_SECRET, {
+    const safeData = data.toObject ? data.toObject() : { ...data };
+    delete safeData.password;
+    const token = jwt.sign({ data: safeData }, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: '7d',
     });
 

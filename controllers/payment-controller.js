@@ -1,5 +1,6 @@
 require("dotenv").config();
 const crypto = require("crypto");
+const axios = require("axios");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { default: mongoose } = require("mongoose");
 const { calculateTotalAmount } = require("../functions/passenger");
@@ -35,6 +36,80 @@ function getPublicApiUrl(req) {
 
 function getFrontendUrl() {
     return (process.env.FRONTEND_URL || process.env.DOMAIN_URL || "http://localhost:3000").replace(/\/$/, "");
+}
+
+function getUserQuery(userId) {
+    if (!userId) return null;
+    return mongoose.Types.ObjectId.isValid(userId)
+        ? { _id: userId }
+        : { appwrite_id: userId };
+}
+
+async function getAuthorizedPaymentUser(userId, walletAuthorization) {
+    if (!userId) return null;
+    if (!walletAuthorization) {
+        throw new Error("Wallet authorization is required for signed-in bookings");
+    }
+
+    let verifiedIdentity;
+    try {
+        const response = await axios.post(
+            `${getFrontendUrl()}/api/wallet/verify`,
+            { token: walletAuthorization },
+            { timeout: 5000 },
+        );
+        verifiedIdentity = response.data;
+    } catch (error) {
+        throw new Error("Wallet authorization is invalid or expired");
+    }
+
+    const email = String(verifiedIdentity?.email || "").trim().toLowerCase();
+    if (!email) {
+        throw new Error("Wallet authorization has no user identity");
+    }
+
+    const userQuery = getUserQuery(userId);
+    const user = await User.findOne({
+        ...userQuery,
+        email: { $regex: `^${email.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" },
+    }).select("_id appwrite_id email balance_in_cents");
+
+    if (!user) {
+        throw new Error("Wallet authorization does not match the booking user");
+    }
+
+    return user;
+}
+
+function validateWalletPayment({ bookingRequests, userId, walletUsedInCents }) {
+    if (walletUsedInCents === 0) return;
+
+    if (!userId) {
+        throw new Error("A signed-in user is required to use wallet balance");
+    }
+
+    let allocatedWalletInCents = 0;
+    for (const bookingRequest of bookingRequests) {
+        if (String(bookingRequest.userId || "") !== String(userId)) {
+            throw new Error("Wallet user does not match the booking user");
+        }
+
+        const body = bookingRequest.body || {};
+        const currency = String(body.price_currency || "EUR").toUpperCase();
+        if (currency !== "EUR") {
+            throw new Error("Wallet balance can only be used for EUR bookings");
+        }
+
+        const allocated = Math.max(Number(body.deposit_spent || 0), 0);
+        if (!Number.isInteger(allocated)) {
+            throw new Error("Wallet allocation must be provided in cents");
+        }
+        allocatedWalletInCents += allocated;
+    }
+
+    if (Math.abs(allocatedWalletInCents - walletUsedInCents) > 1) {
+        throw new Error("Wallet amount does not match the booking allocation");
+    }
 }
 
 function escapeHashValue(value) {
@@ -104,9 +179,7 @@ function verifyHalkbankCallbackHash(body, storeKey) {
     const responseHash = body.HASH || body.hash;
     const hashParams = body.HASHPARAMS || body.HASH_PARAMS;
 
-    if (!responseHash || !hashParams) {
-        return true;
-    }
+    if (!responseHash || !hashParams) return false;
 
     const hashParamsVal = body.HASHPARAMSVAL || String(hashParams)
         .split(":")
@@ -167,8 +240,16 @@ function sendPaymentRedirect(res, url, title) {
 module.exports = {
     initiateHalkbankPayment: async (req, res) => {
         try {
-            const { amount, bookingRequests, bookingSummaries = [] } = req.body;
+            const {
+                amount,
+                bookingRequests,
+                bookingSummaries = [],
+                walletAmount = 0,
+                userId = null,
+                walletAuthorization = null,
+            } = req.body;
             const normalizedAmount = Number(amount);
+            const walletUsedInCents = Math.max(Math.round(Number(walletAmount || 0) * 100), 0);
 
             if (!Number.isFinite(normalizedAmount) || normalizedAmount <= 0) {
                 return bad_request(res, "Please provide a valid payment amount", null);
@@ -178,6 +259,27 @@ module.exports = {
                 return bad_request(res, "No booking requests were provided", null);
             }
 
+            try {
+                validateWalletPayment({ bookingRequests, userId, walletUsedInCents });
+            } catch (error) {
+                return bad_request(res, error.message, null);
+            }
+
+            let authorizedUser = null;
+            if (userId) {
+                try {
+                    authorizedUser = await getAuthorizedPaymentUser(userId, walletAuthorization);
+                } catch (error) {
+                    return bad_request(res, error.message, null);
+                }
+            }
+
+            if (walletUsedInCents > 0) {
+                if (!authorizedUser || Number(authorizedUser.balance_in_cents || 0) < walletUsedInCents) {
+                    return bad_request(res, "Insufficient wallet balance", null);
+                }
+            }
+
             const storeKey = getRequiredEnv("HALKBANK_STORE_KEY");
             const clientId = getRequiredEnv("HALKBANK_CLIENT_ID");
             const postUrl = getRequiredEnv("HALKBANK_GATEWAY_URL");
@@ -185,12 +287,27 @@ module.exports = {
             const rnd = crypto.randomBytes(10).toString("hex");
             const callbackUrl = `${getPublicApiUrl(req)}/payment/halkbank/callback`;
             const { breakdown, halkbankAmount } = getHalkbankPaymentBreakdown(bookingRequests);
+            const calculatedAmount = Number(
+                breakdown.reduce((sum, item) => sum + item.amount, 0).toFixed(2),
+            );
+            const eurToMkdRate = Number(
+                process.env.HALKBANK_EUR_TO_MKD_RATE || DEFAULT_EUR_TO_MKD_RATE,
+            );
+            const cashbackBaseEur = breakdown.every((item) => item.currency === "EUR")
+                ? Number((halkbankAmount / eurToMkdRate).toFixed(2))
+                : 0;
+            if (Math.abs(calculatedAmount - normalizedAmount) > 0.05) {
+                return bad_request(res, "Payment amount does not match the bookings", null);
+            }
 
             await PendingPayment.create({
                 orderId,
-                amount: Number(normalizedAmount.toFixed(2)),
+                amount: calculatedAmount,
                 currency: HALKBANK_CURRENCY_CODE,
                 status: "pending",
+                userId: authorizedUser?._id?.toString() || null,
+                walletUsedInCents,
+                cashbackBaseEur,
                 bookingRequests,
                 bookingSummaries,
                 bankResponse: {
@@ -248,7 +365,7 @@ module.exports = {
             const storeKey = getRequiredEnv("HALKBANK_STORE_KEY");
             if (!verifyHalkbankCallbackHash(bankResponse, storeKey)) {
                 await PendingPayment.findOneAndUpdate(
-                    { orderId },
+                    { orderId, status: { $ne: "approved" } },
                     { status: "failed", bankResponse, failureMessage: "Invalid Halkbank callback hash" },
                 );
 
@@ -261,7 +378,7 @@ module.exports = {
 
             if (responseStatus !== "Approved") {
                 await PendingPayment.findOneAndUpdate(
-                    { orderId },
+                    { orderId, status: { $ne: "approved" } },
                     { status: "failed", bankResponse, failureMessage: errorMessage },
                 );
 
@@ -282,19 +399,67 @@ module.exports = {
             }
 
             if (pendingPayment.status !== "approved") {
-                pendingPayment = await PendingPayment.findOneAndUpdate(
+                const claimedPayment = await PendingPayment.findOneAndUpdate(
                     { orderId, status: { $in: ["pending", "failed"] } },
                     { status: "processing", bankResponse },
                     { new: true },
-                ) || pendingPayment;
+                );
 
-                if (pendingPayment.status === "processing") {
-                    const createdBookingIds = await processHalkbankBookings(pendingPayment, bankResponse);
-                    pendingPayment.status = "approved";
-                    pendingPayment.createdBookingIds = createdBookingIds;
-                    pendingPayment.processedAt = new Date();
-                    pendingPayment.bankResponse = bankResponse;
-                    await pendingPayment.save();
+                if (claimedPayment) {
+                    pendingPayment = claimedPayment;
+                    let walletUserQuery = null;
+                    let walletAdjustmentInCents = 0;
+                    let walletAdjustmentApplied = false;
+
+                    try {
+                        if (pendingPayment.userId && !pendingPayment.walletApplied) {
+                            const rewardInCents = Math.round(
+                                Number(pendingPayment.cashbackBaseEur || pendingPayment.amount || 0) * 100 * 0.05,
+                            );
+                            const walletUsedInCents = Number(pendingPayment.walletUsedInCents || 0);
+                            walletUserQuery = getUserQuery(pendingPayment.userId);
+                            walletAdjustmentInCents = rewardInCents - walletUsedInCents;
+
+                            const updatedUser = await User.findOneAndUpdate(
+                                {
+                                    ...walletUserQuery,
+                                    balance_in_cents: { $gte: walletUsedInCents },
+                                },
+                                { $inc: { balance_in_cents: walletAdjustmentInCents } },
+                                { new: true },
+                            );
+
+                            if (!updatedUser) {
+                                throw new Error("Wallet balance changed before payment completed");
+                            }
+
+                            walletAdjustmentApplied = true;
+                            pendingPayment.walletRewardInCents = rewardInCents;
+                            pendingPayment.walletApplied = true;
+                        }
+
+                        const createdBookingIds = await processHalkbankBookings(pendingPayment, bankResponse);
+                        pendingPayment.status = "approved";
+                        pendingPayment.createdBookingIds = createdBookingIds;
+                        pendingPayment.processedAt = new Date();
+                        pendingPayment.bankResponse = bankResponse;
+                        await pendingPayment.save();
+                    } catch (processingError) {
+                        if (walletAdjustmentApplied && walletUserQuery) {
+                            await User.findOneAndUpdate(walletUserQuery, {
+                                $inc: { balance_in_cents: -walletAdjustmentInCents },
+                            });
+                            pendingPayment.walletRewardInCents = 0;
+                            pendingPayment.walletApplied = false;
+                        }
+
+                        pendingPayment.status = "failed";
+                        pendingPayment.failureMessage = processingError.message;
+                        await pendingPayment.save();
+                        throw processingError;
+                    }
+                } else {
+                    pendingPayment = await PendingPayment.findOne({ orderId });
                 }
             }
 
@@ -720,6 +885,7 @@ function createBookingWithController({ operatorId, userId, ticketId, body }) {
                 ticket_id: ticketId,
             },
             body,
+            walletBalanceAlreadyApplied: true,
         };
 
         const res = {

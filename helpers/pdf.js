@@ -98,9 +98,10 @@ const generateETicket = async (booking, language = 'en') => {
                 .container { max-width: 800px; margin: 0 auto; background: white; border: 1px solid #dbeafe; border-radius: 0.5rem; overflow: hidden; }
                 .header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #dbeafe; }
                 .brand-main { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+                .brand-main.agency-booking { margin-left: auto; }
                 .logo { width: 120px; height: 60px; object-fit: contain; }
-                .agency-logo-wrap { margin-left: auto; display: flex; justify-content: flex-end; align-items: flex-start; min-width: 180px; }
-                .agency-logo { width: 170px; height: 82px; object-fit: contain; object-position: right top; }
+                .agency-logo-wrap { margin-right: auto; display: flex; justify-content: flex-start; align-items: flex-start; min-width: 230px; }
+                .agency-logo { width: 220px; height: 105px; object-fit: contain; object-position: left top; }
                 .booking-id { font-size: 0.875rem; color: #64748b; text-align: center; }
                 .main-content { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #dbeafe; }
                 .left-column, .right-column { padding: 1.5rem; }
@@ -140,11 +141,11 @@ const generateETicket = async (booking, language = 'en') => {
         <body>
             <div class="container">
                 <div class="header">
-                    <div class="brand-main">
+                    ${agencyLogoHtml}
+                    <div class="brand-main${agencyLogoHtml ? ' agency-booking' : ''}">
                         <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
                         <div class="booking-id">${t.bookingId} ${publicBookingId}</div>
                     </div>
-                    ${agencyLogoHtml}
                 </div>
                 <div class="main-content">
                     <div class="left-column">
@@ -414,6 +415,10 @@ const generateSingleETicket = async (booking) => {
                 align-items: center;
                 gap: 0.35rem;
             }
+
+            .brand-main.agency-booking {
+                margin-left: auto;
+            }
             
             .logo {
                 width: 120px;
@@ -422,18 +427,18 @@ const generateSingleETicket = async (booking) => {
             }
 
             .agency-logo-wrap {
-                margin-left: auto;
+                margin-right: auto;
                 display: flex;
-                justify-content: flex-end;
+                justify-content: flex-start;
                 align-items: flex-start;
-                min-width: 180px;
+                min-width: 230px;
             }
 
             .agency-logo {
-                width: 170px;
-                height: 82px;
+                width: 220px;
+                height: 105px;
                 object-fit: contain;
-                object-position: right top;
+                object-position: left top;
             }
             
             .booking-id {
@@ -658,11 +663,11 @@ const generateSingleETicket = async (booking) => {
     <body>
         <div class="container">
             <div class="header">
-                <div class="brand-main">
+                ${agencyLogoHtml}
+                <div class="brand-main${agencyLogoHtml ? ' agency-booking' : ''}">
                     <img src="data:image/png;base64,${logoBase64}" alt="IdoTours" class="logo">
                     <div class="booking-id">Booking ID: ${publicBookingId}</div>
                 </div>
-                ${agencyLogoHtml}
             </div>
             
             <div class="main-content">

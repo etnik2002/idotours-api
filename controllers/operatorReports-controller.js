@@ -311,13 +311,15 @@ module.exports = {
                 });
             });
 
-            const result = Object.values(reports).sort((a, b) => {
+            const result = Object.values(reports)
+              .filter(report => report.passengers.length > 0)
+              .sort((a, b) => {
                 const timeA = a.departure_time || "";
                 const timeB = b.departure_time || "";
                 const timeSort = timeA.localeCompare(timeB);
                 if (timeSort !== 0) return timeSort;
                 return (a.route_code || "").localeCompare(b.route_code || "");
-            });
+              });
             return ok(res, "Passenger manifest generated", result);
         } catch (error) {
             console.error(error);

@@ -480,13 +480,18 @@ module.exports = {
 
       const now = moment.tz(timezone);
       const reportDate = now.format("YYYY-MM-DD");
-      const startAt = now.clone().startOf("day").toDate();
-      const endAt = now.clone().endOf("day").toDate();
+      const previousShift = await AgencyDailyReport.findOne({ agency: id })
+        .sort({ end_at: -1 })
+        .select("end_at");
+      const startAt = previousShift?.end_at
+        ? previousShift.end_at
+        : now.clone().startOf("day").toDate();
+      const endAt = now.toDate();
 
       const bookings = await Booking.find({
         agency: id,
         is_paid: { $in: [true, "true"] },
-        createdAt: { $gte: startAt, $lte: endAt },
+        createdAt: { $gt: startAt, $lte: endAt },
       })
         .sort({ createdAt: 1 })
         .select(

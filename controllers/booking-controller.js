@@ -12,6 +12,7 @@ const { calculateFlexDates } = require("../functions/booking");
 const { sendBookingConfirmationEmail, sendBookingReceiptEmail, sendBookingConfirmationEmailWithAttachment, sendOperatorBookingNotification } = require("../helpers/email");
 const User = require("../models/User");
 const Agency = require("../models/Agency");
+const AgencyDailyReport = require("../models/AgencyDailyReport");
 const Affiliate = require("../models/Affiliate");
 const moment = require("moment-timezone");
 const { generateETicket, generateSingleETicket } = require("../helpers/pdf");
@@ -237,9 +238,17 @@ module.exports = {
         query = { appwrite_id: req.params.user_id }
       }
 
-      if (req.body.is_using_deposited_money) {
-        deposit_spent = Number(req.body.deposit_spent) || 0;
-        const updated = await User.findOneAndUpdate(query, { $inc: { balance_in_cents: -deposit_spent } })
+      if (req.body.is_using_deposited_money && !req.walletBalanceAlreadyApplied) {
+        const deposit_spent = Math.max(Number(req.body.deposit_spent) || 0, 0);
+        const updated = await User.findOneAndUpdate(
+          { ...query, balance_in_cents: { $gte: deposit_spent } },
+          { $inc: { balance_in_cents: -deposit_spent } },
+          { new: true },
+        );
+
+        if (!updated) {
+          return bad_request(res, "Insufficient wallet balance", null);
+        }
       }
 
 
@@ -561,7 +570,21 @@ module.exports = {
 
       const skip = (page - 1) * limit;
 
-      const bookings = await Booking.find({ agency: agency_id }).select(select).skip(skip).limit(limit);
+      const latestClosedShift = await AgencyDailyReport.findOne({
+        agency: agency_id,
+      })
+        .sort({ end_at: -1 })
+        .select("end_at");
+      const query = { agency: agency_id };
+      if (latestClosedShift?.end_at) {
+        query.createdAt = { $gt: latestClosedShift.end_at };
+      }
+
+      const bookings = await Booking.find(query)
+        .sort({ createdAt: -1 })
+        .select(select)
+        .skip(skip)
+        .limit(limit);
       if (!bookings) {
         return error_404(res, "No bookings found", null);
       }
@@ -1281,6 +1304,7 @@ module.exports = {
         metadata: {
           travel_flex: "NO_FLEX",
           message: "Agency booking",
+          ticket_comment: String(req.body.notes || "").trim(),
           destination_country: getDestinationCountry(req.body, ticket),
           price_currency: req.body.price_currency || ticket.metadata?.price_currency || "EUR",
           exchange_rates: req.body.exchange_rates || ticket.metadata?.exchange_rates,

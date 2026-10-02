@@ -17,9 +17,9 @@ router.get("/id/:id", async (req, res) => {
 
 router.post('/create/:operator_id', createRoute);
 
-router.get("/operator/:operator_id", cache("1 minutes"), getByOperator);
+router.get("/operator/:operator_id", getByOperator);
 
-router.get("/", cache("1 minutes"), getAll);
+router.get("/", getAll);
 
 router.post('/delete/:id', deleteById);
 
