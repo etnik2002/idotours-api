@@ -190,6 +190,7 @@ const bookingSchema = mongoose.Schema({
         open_return: { type: Boolean, default: false },
         internal_comment: { type: String, trim: true },
         ticket_comment: { type: String, trim: true },
+        departure_time: { type: String, trim: true },
         destination_country: { type: String, trim: true },
         price_currency: {
             type: String,

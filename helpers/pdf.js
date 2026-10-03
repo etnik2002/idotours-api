@@ -54,6 +54,26 @@ const getAgencyLogoHtml = (booking) => {
 const getPublicBookingId = (booking) =>
     booking?.external_id || booking?._id?.toString() || '';
 
+const getUtcDepartureTime = (booking) => {
+    const scheduledTime = String(booking?.metadata?.departure_time || '').trim();
+    if (/^\d{1,2}:\d{2}$/.test(scheduledTime)) {
+        return scheduledTime.padStart(5, '0');
+    }
+
+    const ticket = booking?.ticket;
+    if (ticket && typeof ticket === 'object') {
+        const departureStationId = booking?.destinations?.departure_station?.toString?.();
+        const matchingStop = ticket.stops?.find((stop) => {
+            const fromId = stop?.from?._id?.toString?.() || stop?.from?.toString?.();
+            return departureStationId && fromId === departureStationId;
+        });
+        const ticketTime = String(matchingStop?.time || ticket?.time || '').trim();
+        if (/^\d{1,2}:\d{2}$/.test(ticketTime)) return ticketTime.padStart(5, '0');
+    }
+
+    return moment.utc(booking?.departure_date).format('HH:mm');
+};
+
 const generateETicket = async (booking, language = 'en') => {
     const t = generateETicketTranslations[language] || generateETicketTranslations.en;
 
@@ -61,7 +81,7 @@ const generateETicket = async (booking, language = 'en') => {
     const qrCodeData = `https://www.gobusly.com/authorize-booking?id=${booking?._id?.toString()}`;
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData);
     const formattedDepartureDate = moment.utc(booking?.departure_date).format('dddd, DD MMM YYYY');
-    const formattedTime = moment.utc(booking?.departure_date).format('HH:mm');
+    const formattedTime = getUtcDepartureTime(booking);
     const agencyLogoHtml = getAgencyLogoHtml(booking);
     const ticketCommentHtml = getTicketCommentHtml(booking);
 
@@ -329,7 +349,7 @@ const generateSingleETicket = async (booking) => {
     console.log({ qrCodeDataUrl });
 
     const formattedDepartureDate = moment.utc(booking?.departure_date).format('dddd, DD MMM YYYY');
-    const formattedTime = moment.utc(booking?.departure_date).format('HH:mm');
+    const formattedTime = getUtcDepartureTime(booking);
     const agencyLogoHtml = getAgencyLogoHtml(booking);
     const ticketCommentHtml = getTicketCommentHtml(booking);
 

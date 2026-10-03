@@ -79,6 +79,38 @@ const getSelectedStop = (ticket, departureStation, arrivalStation) => {
   return matchedStop || ticket.stops[0];
 };
 
+const getStopDepartureDateUtc = (requestedDate, ticket, stop) => {
+  const baseDate = moment.utc(requestedDate || ticket?.departure_date);
+  if (!baseDate.isValid()) return requestedDate || ticket?.departure_date;
+
+  const ticketDate = moment.utc(ticket?.departure_date).startOf("day");
+  const stopDate = moment.utc(stop?.departure_date).startOf("day");
+  if (ticketDate.isValid() && stopDate.isValid()) {
+    baseDate.add(stopDate.diff(ticketDate, "days"), "days");
+  }
+
+  const scheduledTime = String(stop?.time || ticket?.time || "");
+  const timeMatch = scheduledTime.match(/^(\d{1,2}):(\d{2})/);
+  if (timeMatch) {
+    baseDate.set({
+      hour: Number(timeMatch[1]),
+      minute: Number(timeMatch[2]),
+      second: 0,
+      millisecond: 0,
+    });
+  } else if (moment.utc(stop?.departure_date).isValid()) {
+    const storedStopDate = moment.utc(stop.departure_date);
+    baseDate.set({
+      hour: storedStopDate.hour(),
+      minute: storedStopDate.minute(),
+      second: 0,
+      millisecond: 0,
+    });
+  }
+
+  return baseDate.toDate();
+};
+
 const normalizePricedPassengers = (passengers, stop, travelDate) => {
   const adultPrice = Number(stop?.price);
   if (!Number.isFinite(adultPrice)) {
@@ -621,6 +653,7 @@ module.exports = {
       const booking = await Booking.findById(req.params.booking_id).populate([
         { path: "operator", select: "name" },
         { path: "agency", select: "name company_metadata" },
+        { path: "ticket", select: "time departure_date stops" },
       ]);
       if (!booking) {
         return bad_request(res, "Booking not found", null);
@@ -647,6 +680,7 @@ module.exports = {
       const booking = await Booking.findById(req.params.booking_id).populate([
         { path: "operator", select: "name" },
         { path: "agency", select: "name company_metadata" },
+        { path: "ticket", select: "time departure_date stops" },
       ]);
       if (!booking) {
         return bad_request(res, "Booking not found", null);
@@ -867,7 +901,6 @@ module.exports = {
       if (!selectedStop) {
         return bad_request(res, "Ticket stop not found");
       }
-
       const returnStop = return_journey
         ? getSelectedStop(
             returnTicket,
@@ -1266,13 +1299,18 @@ module.exports = {
       if (!selectedStop) {
         return bad_request(res, "Ticket stop not found");
       }
+      const agencyDepartureDate = getStopDepartureDateUtc(
+        stop?.departure_date,
+        ticket,
+        selectedStop,
+      );
 
       let pricedBooking;
       try {
         pricedBooking = normalizePricedPassengers(
           passengers,
           selectedStop,
-          stop?.departure_date || ticket.departure_date,
+          agencyDepartureDate,
         );
       } catch (error) {
         return bad_request(res, error.message);
@@ -1283,7 +1321,7 @@ module.exports = {
         ticket: ticket_id,
         operator: operator_id,
         route: ticket.route_number?._id,
-        departure_date: stop?.departure_date || ticket.departure_date,
+        departure_date: agencyDepartureDate,
         destinations: {
           departure_station,
           arrival_station,
@@ -1304,6 +1342,7 @@ module.exports = {
         metadata: {
           travel_flex: "NO_FLEX",
           message: "Agency booking",
+          departure_time: moment.utc(agencyDepartureDate).format("HH:mm"),
           ticket_comment: String(req.body.notes || "").trim(),
           destination_country: getDestinationCountry(req.body, ticket),
           price_currency: req.body.price_currency || ticket.metadata?.price_currency || "EUR",
@@ -1345,6 +1384,7 @@ module.exports = {
       const booking = await Booking.findById(req.params.booking_id).populate([
         { path: "operator" },
         { path: "agency", select: "name company_metadata" },
+        { path: "ticket", select: "time departure_date stops" },
       ]);
 
       if (!booking) {
